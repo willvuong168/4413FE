@@ -3,10 +3,12 @@ import { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
+import { CompareContext } from "../context/CompareContext";
 
 export default function Header() {
   const { user, logout } = useContext(AuthContext);
   const { cartItems } = useContext(CartContext);
+  const { compareItems } = useContext(CompareContext);
 
   return (
     <header className="bg-gray-800 text-white">
@@ -25,6 +27,19 @@ export default function Header() {
             }
           >
             Catalog
+          </NavLink>
+
+          <NavLink
+            to="/compare"
+            className={({ isActive }) =>
+              isActive ? "underline text-lg" : "hover:underline text-lg"
+            }
+          >
+            Compare ({compareItems.length})
+          </NavLink>
+
+          <NavLink to="/loan" className="hover:underline text-lg">
+            Loan
           </NavLink>
 
           <NavLink

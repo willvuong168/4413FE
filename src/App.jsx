@@ -10,6 +10,8 @@ import AdminView from "./views/Admin/AdminView";
 import NotFoundView from "./views/NotFoundView";
 import VehicleDetailView from "./views/Catalog/VehicleDetailView";
 import Header from "./components/Header";
+import LoanView from "./views/Loan/LoanView";
+import CompareView from "./views/Compare/CompareView";
 
 export default function App() {
   return (
@@ -21,7 +23,7 @@ export default function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/catalog" element={<CatalogView />} />
         <Route path="/register" element={<RegistrationView />} />
-
+        <Route path="/compare" element={<CompareView />} />
         {/* Cart & checkout */}
         <Route path="/cart" element={<ShoppingCartView />} />
         <Route path="/checkout" element={<CheckoutView />} />
@@ -33,6 +35,7 @@ export default function App() {
         <Route path="*" element={<NotFoundView />} />
 
         <Route path="/catalog/:vid" element={<VehicleDetailView />} />
+        <Route path="/loan" element={<LoanView />} />
       </Routes>
     </>
   );

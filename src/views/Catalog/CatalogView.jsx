@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import VehicleCard from "../../components/VehicleCard";
 
-// Dummy data for vehicles
+// Dummy data for vehicles with shape field added
 const dummyVehicles = [
   {
     vid: "v001",
@@ -12,6 +12,7 @@ const dummyVehicles = [
     modelYear: 2021,
     mileage: 12000,
     hasDamage: false,
+    shape: "SUV",
   },
   {
     vid: "vv001",
@@ -22,6 +23,7 @@ const dummyVehicles = [
     modelYear: 2022,
     mileage: 8000,
     hasDamage: false,
+    shape: "SUV",
   },
   {
     vid: "vd001",
@@ -32,8 +34,31 @@ const dummyVehicles = [
     modelYear: 2020,
     mileage: 15000,
     hasDamage: true,
+    shape: "Sedan",
   },
   // Add more dummy vehicles as needed
+  {
+    vid: "vg001",
+    name: "Ioniq 5",
+    brand: "Hyundai",
+    price: 56000,
+    imageUrl: "/images/hyundai-ioniq5.jpg",
+    modelYear: 2023,
+    mileage: 3000,
+    hasDamage: false,
+    shape: "Crossover",
+  },
+  {
+    vid: "vg002",
+    name: "Mustang Mach-E",
+    brand: "Ford",
+    price: 68000,
+    imageUrl: "/images/ford-mach-e.jpg",
+    modelYear: 2022,
+    mileage: 10000,
+    hasDamage: true,
+    shape: "SUV",
+  },
 ];
 
 export default function CatalogView() {
@@ -42,6 +67,7 @@ export default function CatalogView() {
 
   // Filter & sort state
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedShape, setSelectedShape] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedHistory, setSelectedHistory] = useState(""); // "all", "withDamage", "noDamage"
   const [sortOption, setSortOption] = useState(""); // "priceAsc", "priceDesc", "mileageAsc", "mileageDesc"
@@ -57,6 +83,10 @@ export default function CatalogView() {
     () => [...new Set(vehicles.map((v) => v.brand))],
     [vehicles]
   );
+  const shapes = useMemo(
+    () => [...new Set(vehicles.map((v) => v.shape))],
+    [vehicles]
+  );
   const years = useMemo(
     () => [...new Set(vehicles.map((v) => v.modelYear))].sort(),
     [vehicles]
@@ -68,6 +98,7 @@ export default function CatalogView() {
 
     // filter
     if (selectedBrand) list = list.filter((v) => v.brand === selectedBrand);
+    if (selectedShape) list = list.filter((v) => v.shape === selectedShape);
     if (selectedYear)
       list = list.filter((v) => v.modelYear === Number(selectedYear));
     if (selectedHistory === "withDamage")
@@ -93,7 +124,14 @@ export default function CatalogView() {
     }
 
     return list;
-  }, [vehicles, selectedBrand, selectedYear, selectedHistory, sortOption]);
+  }, [
+    vehicles,
+    selectedBrand,
+    selectedShape,
+    selectedYear,
+    selectedHistory,
+    sortOption,
+  ]);
 
   if (loading) return <p className="p-8">Loading catalog...</p>;
 
@@ -115,6 +153,22 @@ export default function CatalogView() {
               {brands.map((b) => (
                 <option key={b} value={b}>
                   {b}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Shape</label>
+            <select
+              className="border rounded p-2"
+              value={selectedShape}
+              onChange={(e) => setSelectedShape(e.target.value)}
+            >
+              <option value="">All</option>
+              {shapes.map((s) => (
+                <option key={s} value={s}>
+                  {s}
                 </option>
               ))}
             </select>

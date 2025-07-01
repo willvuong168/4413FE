@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
+import VehicleCustomization from "../../components/VehicleCustomization";
 
-// Dummy data for vehicles
 const dummyVehicles = [
   {
     vid: "v001",
@@ -10,10 +10,14 @@ const dummyVehicles = [
     brand: "Tesla",
     price: 87000,
     imageUrl: "/images/tesla-model-x.jpg",
-    description: "A SUV built for utility and performance",
-    mileage: 12000,
     modelYear: 2021,
+    mileage: 12000,
     hasDamage: false,
+    shape: "SUV",
+    description: "A SUV built for utility and performance",
+    exteriorColor: "White",
+    interiorColor: "Black",
+    interiorFabric: "Leather",
   },
   {
     vid: "vv001",
@@ -21,10 +25,14 @@ const dummyVehicles = [
     brand: "Tesla",
     price: 99000,
     imageUrl: "/images/tesla-model-y.jpg",
-    description: "A fully electric, mid-size SUV",
-    mileage: 8000,
     modelYear: 2022,
+    mileage: 8000,
     hasDamage: false,
+    shape: "SUV",
+    description: "A fully electric, mid-size SUV",
+    exteriorColor: "Red",
+    interiorColor: "Black",
+    interiorFabric: "Vegan Leather",
   },
   {
     vid: "vd001",
@@ -32,10 +40,45 @@ const dummyVehicles = [
     brand: "Porsche",
     price: 133000,
     imageUrl: "/images/porsche-taycan.jpg",
-    description: "A vehicle with a timeless and instantly recognizable design",
-    mileage: 15000,
     modelYear: 2020,
+    mileage: 15000,
     hasDamage: true,
+    shape: "Sedan",
+    description: "A vehicle with a timeless and instantly recognizable design",
+    exteriorColor: "Blue",
+    interiorColor: "Beige",
+    interiorFabric: "Leather",
+  },
+  {
+    vid: "vg001",
+    name: "Ioniq 5",
+    brand: "Hyundai",
+    price: 56000,
+    imageUrl: "/images/hyundai-ioniq5.jpg",
+    modelYear: 2023,
+    mileage: 3000,
+    hasDamage: false,
+    shape: "Crossover",
+    description:
+      "A futuristic electric crossover with advanced tech and comfort",
+    exteriorColor: "Silver",
+    interiorColor: "Gray",
+    interiorFabric: "Cloth",
+  },
+  {
+    vid: "vg002",
+    name: "Mustang Mach-E",
+    brand: "Ford",
+    price: 68000,
+    imageUrl: "/images/ford-mach-e.jpg",
+    modelYear: 2022,
+    mileage: 10000,
+    hasDamage: true,
+    shape: "SUV",
+    description: "An iconic performance SUV with modern electric power",
+    exteriorColor: "Yellow",
+    interiorColor: "Black",
+    interiorFabric: "Synthetic Leather",
   },
 ];
 
@@ -54,7 +97,6 @@ export default function VehicleDetailView() {
 
   const handleAddToCart = () => {
     if (vehicle) {
-      // addItem expects an object with vid, name, brand, price, imageUrl
       addItem({
         vid: vehicle.vid,
         name: vehicle.name,
@@ -77,6 +119,10 @@ export default function VehicleDetailView() {
     mileage,
     modelYear,
     hasDamage,
+    shape,
+    exteriorColor,
+    interiorColor,
+    interiorFabric,
   } = vehicle;
 
   return (
@@ -109,6 +155,18 @@ export default function VehicleDetailView() {
               <strong>Mileage:</strong> {mileage.toLocaleString()} km
             </li>
             <li>
+              <strong>Vehicle Type:</strong> {shape}
+            </li>
+            <li>
+              <strong>Exterior Color:</strong> {exteriorColor}
+            </li>
+            <li>
+              <strong>Interior Color:</strong> {interiorColor}
+            </li>
+            <li>
+              <strong>Interior Fabric:</strong> {interiorFabric}
+            </li>
+            <li>
               <strong>History:</strong>{" "}
               {hasDamage ? "Reported damage" : "No reported damage"}
             </li>
@@ -119,6 +177,7 @@ export default function VehicleDetailView() {
           >
             Add to Cart
           </button>
+          <VehicleCustomization vehicle={vehicle} />
         </div>
       </div>
     </div>

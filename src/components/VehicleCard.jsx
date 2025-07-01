@@ -1,4 +1,6 @@
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { CompareContext } from "../context/CompareContext";
 
 /**
  * VehicleCard
@@ -9,6 +11,11 @@ import { Link } from "react-router-dom";
  */
 export default function VehicleCard({ vehicle }) {
   const { vid, name, brand, price, imageUrl } = vehicle;
+  const { addCompare } = useContext(CompareContext);
+
+  const handleCompare = () => {
+    addCompare(vehicle);
+  };
 
   return (
     <div className="border rounded-lg shadow-md overflow-hidden flex flex-col">
@@ -28,12 +35,20 @@ export default function VehicleCard({ vehicle }) {
           </p>
         </div>
 
-        <Link
-          to={`/catalog/${vid}`}
-          className="mt-4 inline-block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-        >
-          View Details
-        </Link>
+        <div className="mt-4 flex space-x-2">
+          <Link
+            to={`/catalog/${vid}`}
+            className="flex-1 text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          >
+            View Details
+          </Link>
+          <button
+            onClick={handleCompare}
+            className="flex-1 text-center border border-gray-400 text-gray-700 py-2 rounded hover:bg-gray-100 transition"
+          >
+            Compare
+          </button>
+        </div>
       </div>
     </div>
   );
