@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
 import VehicleCustomization from "../../components/VehicleCustomization";
+import ReviewCard from "../../components/ReviewCard"
 
 const dummyVehicles = [
   {
@@ -18,6 +19,20 @@ const dummyVehicles = [
     exteriorColor: "White",
     interiorColor: "Black",
     interiorFabric: "Leather",
+    reviews: [
+      {
+        reviewerName: "John Doe",
+        reviewStars: 5,
+        reviewDesc: "Great car!",
+        reviewDate: "October 1, 2002"
+      },
+      {
+        reviewerName: "Jane Doe",
+        reviewStars: 1,
+        reviewDesc: "Bad car!",
+        reviewDate: "October 31, 2002"
+      }
+    ]
   },
   {
     vid: "vv001",
@@ -33,6 +48,7 @@ const dummyVehicles = [
     exteriorColor: "Red",
     interiorColor: "Black",
     interiorFabric: "Vegan Leather",
+    reviews: []
   },
   {
     vid: "vd001",
@@ -48,6 +64,7 @@ const dummyVehicles = [
     exteriorColor: "Blue",
     interiorColor: "Beige",
     interiorFabric: "Leather",
+    reviews: []
   },
   {
     vid: "vg001",
@@ -64,6 +81,7 @@ const dummyVehicles = [
     exteriorColor: "Silver",
     interiorColor: "Gray",
     interiorFabric: "Cloth",
+    reviews: []
   },
   {
     vid: "vg002",
@@ -79,6 +97,7 @@ const dummyVehicles = [
     exteriorColor: "Yellow",
     interiorColor: "Black",
     interiorFabric: "Synthetic Leather",
+    reviews: []
   },
 ];
 
@@ -178,6 +197,10 @@ export default function VehicleDetailView() {
             Add to Cart
           </button>
           <VehicleCustomization vehicle={vehicle} />
+          <div>
+            <h1>Reviews</h1>
+            <ReviewCard vehicle={vehicle}/>
+          </div>
         </div>
       </div>
     </div>
