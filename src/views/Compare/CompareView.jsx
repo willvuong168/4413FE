@@ -36,8 +36,8 @@ export default function CompareView() {
           <tr>
             <th className="border px-4 py-2 text-left">Feature</th>
             {compareItems.map((item) => (
-              <th key={item.vid} className="border px-4 py-2 text-center">
-                {item.brand} {item.name}
+              <th key={item.id} className="border px-4 py-2 text-center">
+                {item.make} {item.model}
               </th>
             ))}
           </tr>
@@ -46,10 +46,10 @@ export default function CompareView() {
           <tr>
             <th className="border px-4 py-2 text-left">Image</th>
             {compareItems.map((item) => (
-              <td key={item.vid} className="border px-4 py-2 text-center">
+              <td key={item.id} className="border px-4 py-2 text-center">
                 <img
-                  src={item.imageUrl || "/placeholder.png"}
-                  alt={`${item.brand} ${item.name}`}
+                  src={item.imageUrls?.[0] || "/placeholder.png"}
+                  alt={`${item.make} ${item.model}`}
                   className="mx-auto h-32 object-cover rounded"
                 />
               </td>
@@ -58,41 +58,52 @@ export default function CompareView() {
           <tr>
             <th className="border px-4 py-2 text-left">Price</th>
             {compareItems.map((item) => (
-              <td key={item.vid} className="border px-4 py-2 text-center">
-                ${item.price.toLocaleString()}
+              <td key={item.id} className="border px-4 py-2 text-center">
+                $
+                {item.price.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                })}
               </td>
             ))}
           </tr>
           <tr>
-            <th className="border px-4 py-2 text-left">Model Year</th>
+            <th className="border px-4 py-2 text-left">Year</th>
             {compareItems.map((item) => (
-              <td key={item.vid} className="border px-4 py-2 text-center">
-                {item.modelYear}
+              <td key={item.id} className="border px-4 py-2 text-center">
+                {item.year}
               </td>
             ))}
           </tr>
-          {/* <tr>
+          <tr>
             <th className="border px-4 py-2 text-left">Mileage</th>
             {compareItems.map((item) => (
-              <td key={item.vid} className="border px-4 py-2 text-center">
+              <td key={item.id} className="border px-4 py-2 text-center">
                 {item.mileage.toLocaleString()} km
               </td>
             ))}
-          </tr> */}
+          </tr>
+          <tr>
+            <th className="border px-4 py-2 text-left">Type</th>
+            {compareItems.map((item) => (
+              <td key={item.id} className="border px-4 py-2 text-center">
+                {item.shape}
+              </td>
+            ))}
+          </tr>
           <tr>
             <th className="border px-4 py-2 text-left">History</th>
             {compareItems.map((item) => (
-              <td key={item.vid} className="border px-4 py-2 text-center">
-                {item.hasDamage ? "Reported damage" : "No reported damage"}
+              <td key={item.id} className="border px-4 py-2 text-center">
+                {item.accident ? "Reported damage" : "No reported damage"}
               </td>
             ))}
           </tr>
           <tr>
             <th className="border px-4 py-2 text-left">Actions</th>
             {compareItems.map((item) => (
-              <td key={item.vid} className="border px-4 py-2 text-center">
+              <td key={item.id} className="border px-4 py-2 text-center">
                 <button
-                  onClick={() => removeCompare(item.vid)}
+                  onClick={() => removeCompare(item.id)}
                   className="text-red-600 hover:underline"
                 >
                   Remove

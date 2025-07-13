@@ -121,7 +121,7 @@ export default function CheckoutView() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-black py-3 rounded hover:bg-blue-700 transition"
         >
           {loading ? "Processing..." : "Confirm Order"}
         </button>

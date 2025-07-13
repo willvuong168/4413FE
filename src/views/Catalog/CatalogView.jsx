@@ -1,86 +1,43 @@
 import { useEffect, useState, useMemo } from "react";
+import axios from "axios";
 import VehicleCard from "../../components/VehicleCard";
-
-// Dummy data for vehicles with shape field added
-const dummyVehicles = [
-  {
-    vid: "v001",
-    name: "Model X",
-    brand: "Tesla",
-    price: 87000,
-    imageUrl: "/images/tesla-model-x.jpg",
-    modelYear: 2021,
-    mileage: 12000,
-    hasDamage: false,
-    shape: "SUV",
-  },
-  {
-    vid: "vv001",
-    name: "Model Y",
-    brand: "Tesla",
-    price: 99000,
-    imageUrl: "/images/tesla-model-y.jpg",
-    modelYear: 2022,
-    mileage: 8000,
-    hasDamage: false,
-    shape: "SUV",
-  },
-  {
-    vid: "vd001",
-    name: "Taycan",
-    brand: "Porsche",
-    price: 133000,
-    imageUrl: "/images/porsche-taycan.jpg",
-    modelYear: 2020,
-    mileage: 15000,
-    hasDamage: true,
-    shape: "Sedan",
-  },
-  // Add more dummy vehicles as needed
-  {
-    vid: "vg001",
-    name: "Ioniq 5",
-    brand: "Hyundai",
-    price: 56000,
-    imageUrl: "/images/hyundai-ioniq5.jpg",
-    modelYear: 2023,
-    mileage: 3000,
-    hasDamage: false,
-    shape: "Crossover",
-  },
-  {
-    vid: "vg002",
-    name: "Mustang Mach-E",
-    brand: "Ford",
-    price: 68000,
-    imageUrl: "/images/ford-mach-e.jpg",
-    modelYear: 2022,
-    mileage: 10000,
-    hasDamage: true,
-    shape: "SUV",
-  },
-];
 
 export default function CatalogView() {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Filter & sort state
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedShape, setSelectedShape] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
-  const [selectedHistory, setSelectedHistory] = useState(""); // "all", "withDamage", "noDamage"
+  const [selectedHistory, setSelectedHistory] = useState(""); // "withDamage", "noDamage"
   const [sortOption, setSortOption] = useState(""); // "priceAsc", "priceDesc", "mileageAsc", "mileageDesc"
 
   useEffect(() => {
-    // Use dummy data instead of API
-    setVehicles(dummyVehicles);
-    setLoading(false);
+    async function fetchVehicles() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/vehicles?page=0&size=50"
+        );
+        // API returns paginated data with 'content' array
+        setVehicles(response.data.content || []);
+      } catch (err) {
+        console.error("Failed to fetch vehicles", err);
+        setError("Unable to load vehicle catalog.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchVehicles();
   }, []);
 
   // derive unique filter options
   const brands = useMemo(
-    () => [...new Set(vehicles.map((v) => v.brand))],
+    () => [...new Set(vehicles.map((v) => v.make))],
     [vehicles]
   );
   const shapes = useMemo(
@@ -88,7 +45,7 @@ export default function CatalogView() {
     [vehicles]
   );
   const years = useMemo(
-    () => [...new Set(vehicles.map((v) => v.modelYear))].sort(),
+    () => [...new Set(vehicles.map((v) => v.year))].sort(),
     [vehicles]
   );
 
@@ -97,13 +54,12 @@ export default function CatalogView() {
     let list = [...vehicles];
 
     // filter
-    if (selectedBrand) list = list.filter((v) => v.brand === selectedBrand);
+    if (selectedBrand) list = list.filter((v) => v.make === selectedBrand);
     if (selectedShape) list = list.filter((v) => v.shape === selectedShape);
     if (selectedYear)
-      list = list.filter((v) => v.modelYear === Number(selectedYear));
-    if (selectedHistory === "withDamage")
-      list = list.filter((v) => v.hasDamage === true);
-    if (selectedHistory === "noDamage") list = list.filter((v) => !v.hasDamage);
+      list = list.filter((v) => v.year === Number(selectedYear));
+    if (selectedHistory === "withDamage") list = list.filter((v) => v.accident);
+    if (selectedHistory === "noDamage") list = list.filter((v) => !v.accident);
 
     // sort
     switch (sortOption) {
@@ -134,6 +90,7 @@ export default function CatalogView() {
   ]);
 
   if (loading) return <p className="p-8">Loading catalog...</p>;
+  if (error) return <p className="p-8 text-red-600">{error}</p>;
 
   return (
     <div className="p-8">
@@ -224,7 +181,7 @@ export default function CatalogView() {
       {displayed.length ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayed.map((v) => (
-            <VehicleCard key={v.vid} vehicle={v} />
+            <VehicleCard key={v.id} vehicle={v} />
           ))}
         </div>
       ) : (

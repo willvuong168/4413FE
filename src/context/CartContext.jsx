@@ -21,26 +21,26 @@ export function CartProvider({ children }) {
 
   const addItem = (item) => {
     setCartItems((prev) => {
-      const exists = prev.find((i) => i.vid === item.vid);
+      const exists = prev.find((i) => i.id === item.id);
       if (exists) {
         return prev.map((i) =>
-          i.vid === item.vid ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
       return [...prev, { ...item, quantity: 1 }];
     });
   };
 
-  const removeItem = (vid) => {
-    setCartItems((prev) => prev.filter((i) => i.vid !== vid));
+  const removeItem = (id) => {
+    setCartItems((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const updateQuantity = (vid, quantity) => {
+  const updateQuantity = (id, quantity) => {
     if (quantity <= 0) {
-      removeItem(vid);
+      removeItem(id);
     } else {
       setCartItems((prev) =>
-        prev.map((i) => (i.vid === vid ? { ...i, quantity } : i))
+        prev.map((i) => (i.id === id ? { ...i, quantity } : i))
       );
     }
   };

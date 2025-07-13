@@ -11,15 +11,23 @@ export default function Header() {
   const { compareItems } = useContext(CompareContext);
 
   return (
-    <header className="bg-gray-800 text-white">
+    <header className="bg-gray-800 text-black">
       <div className="container mx-auto flex items-center justify-between py-4 px-6">
         {/* Logo / Brand */}
         <Link to="/" className="text-2xl font-bold hover:opacity-75">
-          EV Store
+          EECS 4413 Group A
         </Link>
 
         {/* Navigation Links */}
         <nav className="flex items-center space-x-6">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "underline text-lg" : "hover:underline text-lg"
+            }
+          >
+            Home
+          </NavLink>
           <NavLink
             to="/catalog"
             className={({ isActive }) =>
@@ -28,7 +36,9 @@ export default function Header() {
           >
             Catalog
           </NavLink>
-
+          <NavLink to="/loan" className="hover:underline text-lg">
+            Loan
+          </NavLink>
           <NavLink
             to="/compare"
             className={({ isActive }) =>
@@ -36,10 +46,6 @@ export default function Header() {
             }
           >
             Compare ({compareItems.length})
-          </NavLink>
-
-          <NavLink to="/loan" className="hover:underline text-lg">
-            Loan
           </NavLink>
 
           <NavLink

@@ -1,148 +1,118 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
+import axios from "axios";
 import { CartContext } from "../../context/CartContext";
 import VehicleCustomization from "../../components/VehicleCustomization";
-import ReviewCard from "../../components/ReviewCard"
-
-const dummyVehicles = [
-  {
-    vid: "v001",
-    name: "Model X",
-    brand: "Tesla",
-    price: 87000,
-    imageUrl: "/images/tesla-model-x.jpg",
-    modelYear: 2021,
-    mileage: 12000,
-    hasDamage: false,
-    shape: "SUV",
-    description: "A SUV built for utility and performance",
-    exteriorColor: "White",
-    interiorColor: "Black",
-    interiorFabric: "Leather",
-    reviews: [
-      {
-        reviewerName: "John Doe",
-        reviewStars: 5,
-        reviewDesc: "Great car!",
-        reviewDate: "October 1, 2002"
-      },
-      {
-        reviewerName: "Jane Doe",
-        reviewStars: 1,
-        reviewDesc: "Bad car!",
-        reviewDate: "October 31, 2002"
-      }
-    ]
-  },
-  {
-    vid: "vv001",
-    name: "Model Y",
-    brand: "Tesla",
-    price: 99000,
-    imageUrl: "/images/tesla-model-y.jpg",
-    modelYear: 2022,
-    mileage: 8000,
-    hasDamage: false,
-    shape: "SUV",
-    description: "A fully electric, mid-size SUV",
-    exteriorColor: "Red",
-    interiorColor: "Black",
-    interiorFabric: "Vegan Leather",
-    reviews: []
-  },
-  {
-    vid: "vd001",
-    name: "Taycan",
-    brand: "Porsche",
-    price: 133000,
-    imageUrl: "/images/porsche-taycan.jpg",
-    modelYear: 2020,
-    mileage: 15000,
-    hasDamage: true,
-    shape: "Sedan",
-    description: "A vehicle with a timeless and instantly recognizable design",
-    exteriorColor: "Blue",
-    interiorColor: "Beige",
-    interiorFabric: "Leather",
-    reviews: []
-  },
-  {
-    vid: "vg001",
-    name: "Ioniq 5",
-    brand: "Hyundai",
-    price: 56000,
-    imageUrl: "/images/hyundai-ioniq5.jpg",
-    modelYear: 2023,
-    mileage: 3000,
-    hasDamage: false,
-    shape: "Crossover",
-    description:
-      "A futuristic electric crossover with advanced tech and comfort",
-    exteriorColor: "Silver",
-    interiorColor: "Gray",
-    interiorFabric: "Cloth",
-    reviews: []
-  },
-  {
-    vid: "vg002",
-    name: "Mustang Mach-E",
-    brand: "Ford",
-    price: 68000,
-    imageUrl: "/images/ford-mach-e.jpg",
-    modelYear: 2022,
-    mileage: 10000,
-    hasDamage: true,
-    shape: "SUV",
-    description: "An iconic performance SUV with modern electric power",
-    exteriorColor: "Yellow",
-    interiorColor: "Black",
-    interiorFabric: "Synthetic Leather",
-    reviews: []
-  },
-];
 
 export default function VehicleDetailView() {
   const { vid } = useParams();
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Review states
+  const [reviews, setReviews] = useState([]);
+  const [reviewLoading, setReviewLoading] = useState(true);
+  const [reviewError, setReviewError] = useState(null);
+  const [newReviewer, setNewReviewer] = useState("");
+  const [newRating, setNewRating] = useState(5);
+  const [newComment, setNewComment] = useState("");
+
   const { addItem } = useContext(CartContext);
 
   useEffect(() => {
-    // Use dummy data instead of API
-    const found = dummyVehicles.find((v) => v.vid === vid);
-    setVehicle(found || null);
-    setLoading(false);
+    async function fetchVehicle() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/vehicles/${vid}`
+        );
+        setVehicle(response.data);
+      } catch (err) {
+        console.error("Failed to fetch vehicle details", err);
+        setError("Unable to load vehicle details.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchVehicle();
+  }, [vid]);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      setReviewLoading(true);
+      setReviewError(null);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/vehicles/${vid}/reviews`
+        );
+        setReviews(response.data);
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+        setReviewError("Unable to load reviews.");
+      } finally {
+        setReviewLoading(false);
+      }
+    }
+
+    fetchReviews();
   }, [vid]);
 
   const handleAddToCart = () => {
-    if (vehicle) {
-      addItem({
-        vid: vehicle.vid,
-        name: vehicle.name,
-        brand: vehicle.brand,
-        price: vehicle.price,
-        imageUrl: vehicle.imageUrl,
-      });
+    if (!vehicle) return;
+    addItem({
+      id: vehicle.id,
+      name: `${vehicle.make} ${vehicle.model}`,
+      price: vehicle.price,
+      imageUrl: vehicle.imageUrls?.[0] || "/placeholder.png",
+    });
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!newReviewer || !newComment) return;
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/vehicles/${vid}/reviews`,
+        {
+          reviewer: newReviewer,
+          rating: newRating,
+          comment: newComment,
+        }
+      );
+      setReviews((prev) => [...prev, response.data]);
+      setNewReviewer("");
+      setNewRating(5);
+      setNewComment("");
+    } catch (err) {
+      console.error("Failed to submit review", err);
+      alert("Unable to submit review. Please try again later.");
     }
   };
 
   if (loading) return <p className="p-8">Loading vehicle details...</p>;
+  if (error) return <p className="p-8 text-red-600">{error}</p>;
   if (!vehicle) return <p className="p-8">Vehicle not found.</p>;
 
   const {
-    name,
-    brand,
+    make,
+    model,
     price,
-    imageUrl,
     description,
     mileage,
-    modelYear,
-    hasDamage,
+    year,
     shape,
-    exteriorColor,
-    interiorColor,
-    interiorFabric,
+    color,
+    newVehicle,
+    accident,
+    hotDeal,
+    imageUrls,
   } = vehicle;
+
+  const primaryImage =
+    imageUrls && imageUrls.length > 0 ? imageUrls[0] : "/placeholder.png";
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -152,55 +122,140 @@ export default function VehicleDetailView() {
       >
         ← Back to Catalog
       </Link>
+
+      {hotDeal && (
+        <span className="inline-block bg-red-500 text-black px-3 py-1 rounded-full mb-4">
+          Hot Deal!
+        </span>
+      )}
+
       <div className="flex flex-col lg:flex-row gap-8">
         <img
-          src={imageUrl}
-          alt={`${brand} ${name}`}
+          src={primaryImage}
+          alt={`${make} ${model}`}
           className="w-full lg:w-1/2 h-auto object-cover rounded"
         />
+
         <div className="flex-1">
           <h1 className="text-4xl font-bold mb-2">
-            {brand} {name}
+            {make} {model}
           </h1>
           <p className="text-2xl text-gray-700 mb-4">
             ${price.toLocaleString()}
           </p>
           <p className="mb-4">{description}</p>
+
           <ul className="space-y-1 mb-6">
             <li>
-              <strong>Model Year:</strong> {modelYear}
+              <strong>Model Year:</strong> {year}
             </li>
             <li>
               <strong>Mileage:</strong> {mileage.toLocaleString()} km
             </li>
             <li>
-              <strong>Vehicle Type:</strong> {shape}
+              <strong>Body Style:</strong> {shape}
             </li>
             <li>
-              <strong>Exterior Color:</strong> {exteriorColor}
+              <strong>Color:</strong> {color}
             </li>
             <li>
-              <strong>Interior Color:</strong> {interiorColor}
+              <strong>Status:</strong> {newVehicle ? "New" : "Used"}
             </li>
             <li>
-              <strong>Interior Fabric:</strong> {interiorFabric}
-            </li>
-            <li>
-              <strong>History:</strong>{" "}
-              {hasDamage ? "Reported damage" : "No reported damage"}
+              <strong>Accident History:</strong>{" "}
+              {accident ? "Reported" : "None"}
             </li>
           </ul>
+
           <button
             onClick={handleAddToCart}
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+            className="bg-blue-600 text-black py-2 px-4 rounded hover:bg-blue-700 transition mb-6"
           >
             Add to Cart
           </button>
+
           <VehicleCustomization vehicle={vehicle} />
-          <div>
-            <h1>Reviews</h1>
-            <ReviewCard vehicle={vehicle}/>
-          </div>
+
+          {/* Reviews Section */}
+          <section className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+            {reviewLoading ? (
+              <p>Loading reviews...</p>
+            ) : reviewError ? (
+              <p className="text-red-600">{reviewError}</p>
+            ) : reviews.length > 0 ? (
+              <ul className="space-y-4 mb-6">
+                {reviews.map((rev) => (
+                  <li key={rev.id} className="border-b pb-4">
+                    <div className="flex items-center mb-1">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <span
+                          key={idx}
+                          className={`text-xl ${
+                            idx < rev.rating
+                              ? "text-yellow-500"
+                              : "text-gray-300"
+                          }`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                      <span className="ml-2 text-gray-600 text-sm">
+                        by {rev.reviewer}
+                      </span>
+                    </div>
+                    <p>{rev.comment}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mb-6">No reviews yet. Be the first to review!</p>
+            )}
+
+            <form onSubmit={handleReviewSubmit} className="mb-8">
+              <h3 className="text-xl font-semibold mb-2">Write a Review</h3>
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Name:</label>
+                <input
+                  type="text"
+                  value={newReviewer}
+                  onChange={(e) => setNewReviewer(e.target.value)}
+                  className="w-full border rounded p-2"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Rating:</label>
+                <select
+                  value={newRating}
+                  onChange={(e) => setNewRating(Number(e.target.value))}
+                  className="border rounded p-2"
+                >
+                  {[1, 2, 3, 4, 5].map((r) => (
+                    <option key={r} value={r}>
+                      {r} Star{r > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Comment:</label>
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="w-full border rounded p-2"
+                  rows={4}
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-green-600 text-black py-2 px-4 rounded hover:bg-green-700 transition"
+              >
+                Submit Review
+              </button>
+            </form>
+          </section>
         </div>
       </div>
     </div>

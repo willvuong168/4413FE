@@ -37,15 +37,14 @@ export default function RegistrationView() {
     setError("");
 
     try {
-      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/signup";
       const payload = isLogin
         ? { username: formData.username, password: formData.password }
         : formData;
       const res = await axios.post(endpoint, payload);
-
       // assume API returns { user, token }
-      setUser(res.data.user);
-      localStorage.setItem("authToken", res.data.token);
+      setUser(formData.username);
+      localStorage.setItem("authToken", res.data);
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -105,7 +104,7 @@ export default function RegistrationView() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-black py-2 rounded hover:bg-blue-700 transition"
         >
           {loading
             ? isLogin

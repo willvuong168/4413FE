@@ -26,14 +26,16 @@ export function CompareProvider({ children }) {
   const addCompare = (item) => {
     console.log("Adding item to compare", item);
     setCompareItems((prev) => {
-      if (prev.find((v) => v.vid === item.vid)) return prev;
-      if (prev.length >= 4) return prev; // max 4 items
+      // Prevent duplicates
+      if (prev.find((v) => v.id === item.id)) return prev;
+      // Limit to 4 items
+      if (prev.length >= 4) return prev;
       return [...prev, item];
     });
   };
 
-  const removeCompare = (vid) => {
-    setCompareItems((prev) => prev.filter((v) => v.vid !== vid));
+  const removeCompare = (id) => {
+    setCompareItems((prev) => prev.filter((v) => v.id !== id));
   };
 
   const clearCompare = () => {

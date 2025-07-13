@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
 
   // Login action: store token and set user
   const login = (userData, token) => {
+    console.log(userData, token);
     localStorage.setItem("authToken", token);
     setUser(userData);
   };

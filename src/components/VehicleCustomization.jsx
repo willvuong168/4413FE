@@ -7,24 +7,25 @@ import { CartContext } from "../context/CartContext";
  * Lets users customize vehicle options before adding to cart.
  * Props:
  * - vehicle: {
- *     vid, name, brand, price, imageUrl,
- *     exteriorColor, interiorColor, interiorFabric
+ *     id, price, vin, shape, make, model, color,
+ *     year, mileage, description, newVehicle, accident, hotDeal,
+ *     imageUrls: string[]
  *   }
  */
 export default function VehicleCustomization({ vehicle }) {
   const { addItem } = useContext(CartContext);
   const {
-    vid,
-    name,
-    brand,
+    id,
     price,
-    imageUrl,
-    exteriorColor,
-    interiorColor,
-    interiorFabric,
+    vin,
+    shape,
+    make,
+    model,
+    color, // default exterior color
+    imageUrls = [], // array of image URLs
   } = vehicle;
 
-  // Available customization options (can be fetched or defined per model)
+  // Available customization options (could be fetched per model)
   const exteriorOptions = [
     "White",
     "Red",
@@ -42,20 +43,23 @@ export default function VehicleCustomization({ vehicle }) {
     "Synthetic Leather",
   ];
 
-  const [selectedExterior, setSelectedExterior] = useState(exteriorColor);
-  const [selectedInteriorColor, setSelectedInteriorColor] =
-    useState(interiorColor);
-  const [selectedInteriorFabric, setSelectedInteriorFabric] =
-    useState(interiorFabric);
+  const [selectedExterior, setSelectedExterior] = useState(color);
+  const [selectedInteriorColor, setSelectedInteriorColor] = useState(
+    interiorColorOptions[0]
+  );
+  const [selectedInteriorFabric, setSelectedInteriorFabric] = useState(
+    interiorFabricOptions[0]
+  );
 
   const handleAdd = () => {
-    // Construct customized vehicle object
     const customizedItem = {
-      vid,
-      name,
-      brand,
+      id,
+      vin,
+      shape,
+      make,
+      model,
       price,
-      imageUrl,
+      imageUrl: imageUrls[0] || "", // fallback if empty
       customizations: {
         exteriorColor: selectedExterior,
         interiorColor: selectedInteriorColor,
@@ -67,7 +71,9 @@ export default function VehicleCustomization({ vehicle }) {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md space-y-4 mt-8">
-      <h2 className="text-2xl font-semibold">Customize Your Vehicle</h2>
+      <h2 className="text-2xl font-semibold">
+        Customize Your {make} {model}
+      </h2>
 
       {/* Exterior Color */}
       <div>
@@ -121,7 +127,7 @@ export default function VehicleCustomization({ vehicle }) {
 
       <button
         onClick={handleAdd}
-        className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+        className="w-full bg-green-600 text-black py-2 rounded hover:bg-green-700 transition"
       >
         Add to Cart with Customizations
       </button>
