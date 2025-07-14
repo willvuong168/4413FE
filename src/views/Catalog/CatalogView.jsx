@@ -37,7 +37,7 @@ export default function CatalogView() {
 
   // derive unique filter options
   const brands = useMemo(
-    () => [...new Set(vehicles.map((v) => v.make))],
+    () => [...new Set(vehicles.map((v) => v.brand))],
     [vehicles]
   );
   const shapes = useMemo(
@@ -54,7 +54,7 @@ export default function CatalogView() {
     let list = [...vehicles];
 
     // filter
-    if (selectedBrand) list = list.filter((v) => v.make === selectedBrand);
+    if (selectedBrand) list = list.filter((v) => v.brand === selectedBrand);
     if (selectedShape) list = list.filter((v) => v.shape === selectedShape);
     if (selectedYear)
       list = list.filter((v) => v.year === Number(selectedYear));

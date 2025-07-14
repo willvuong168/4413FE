@@ -9,30 +9,34 @@ import { CompareContext } from "../context/CompareContext";
  * Props:
  * - vehicle: {
  *     id,
+ *     quantity,
  *     price,
- *     vin,
+ *     hotDeal,
  *     shape,
- *     make,
+ *     brand,
  *     model,
- *     color,
  *     year,
  *     mileage,
- *     description,
  *     newVehicle,
  *     accident,
- *     hotDeal,
+ *     exteriorColor,
+ *     interiorColor,
+ *     interiorMaterial,
+ *     description,
  *     imageUrls
  *   }
  */
 export default function VehicleCard({ vehicle }) {
   const {
     id,
+    quantity,
     price,
-    vin,
     shape,
-    make,
+    brand,
     model,
-    color,
+    exteriorColor,
+    interiorColor,
+    interiorMaterial,
     year,
     mileage,
     description,
@@ -60,7 +64,7 @@ export default function VehicleCard({ vehicle }) {
         )}
         <img
           src={primaryImage}
-          alt={`${make} ${model}`}
+          alt={`${brand} ${model}`}
           className="h-48 w-full object-cover"
         />
       </div>
@@ -68,17 +72,24 @@ export default function VehicleCard({ vehicle }) {
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800">
-            {make} {model} ({shape})
+            {brand} {model} ({shape})
           </h3>
           <p className="mt-1 text-gray-600">
             <span className="font-medium">Year:</span> {year}
           </p>
           <p className="mt-1 text-gray-600">
-            <span className="font-medium">Color:</span> {color}
+            <span className="font-medium">Exterior:</span> {exteriorColor}
+          </p>
+          <p className="mt-1 text-gray-600">
+            <span className="font-medium">Interior:</span> {interiorColor}{" "}
+            {interiorMaterial}
           </p>
           <p className="mt-1 text-gray-600">
             <span className="font-medium">Mileage:</span>{" "}
             {mileage.toLocaleString()} km
+          </p>
+          <p className="mt-1 text-gray-600">
+            <span className="font-medium">Available:</span> {quantity} units
           </p>
           <p className="mt-2 text-gray-700 italic text-sm">{description}</p>
           <div className="mt-2 flex space-x-2">

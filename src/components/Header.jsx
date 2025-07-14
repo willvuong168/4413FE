@@ -47,7 +47,6 @@ export default function Header() {
           >
             Compare ({compareItems.length})
           </NavLink>
-
           <NavLink
             to="/cart"
             className={({ isActive }) =>
@@ -59,21 +58,25 @@ export default function Header() {
 
           {user ? (
             <>
-              <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                  isActive ? "underline text-lg" : "hover:underline text-lg"
-                }
-              >
-                Admin
-              </NavLink>
+              {/* Only show Admin if the logged-in user's username is "user1" */}
+              {user === "user1" && (
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    isActive ? "underline text-lg" : "hover:underline text-lg"
+                  }
+                >
+                  Admin
+                </NavLink>
+              )}
+              <span className="text-lg text-gray-300">Welcome, {user}</span>
               <button onClick={logout} className="ml-4 text-lg hover:underline">
                 Sign Out
               </button>
             </>
           ) : (
             <NavLink
-              to="/register"
+              to="/login"
               className={({ isActive }) =>
                 isActive ? "underline text-lg" : "hover:underline text-lg"
               }

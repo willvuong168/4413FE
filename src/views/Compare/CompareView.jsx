@@ -37,7 +37,7 @@ export default function CompareView() {
             <th className="border px-4 py-2 text-left">Feature</th>
             {compareItems.map((item) => (
               <th key={item.id} className="border px-4 py-2 text-center">
-                {item.make} {item.model}
+                {item.brand} {item.model}
               </th>
             ))}
           </tr>
@@ -49,7 +49,7 @@ export default function CompareView() {
               <td key={item.id} className="border px-4 py-2 text-center">
                 <img
                   src={item.imageUrls?.[0] || "/placeholder.png"}
-                  alt={`${item.make} ${item.model}`}
+                  alt={`${item.brand} ${item.model}`}
                   className="mx-auto h-32 object-cover rounded"
                 />
               </td>

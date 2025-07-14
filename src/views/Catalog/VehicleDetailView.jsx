@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { CartContext } from "../../context/CartContext";
+import { AuthContext } from "../../context/AuthContext";
 import VehicleCustomization from "../../components/VehicleCustomization";
 
 export default function VehicleDetailView() {
@@ -14,11 +15,11 @@ export default function VehicleDetailView() {
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [reviewError, setReviewError] = useState(null);
-  const [newReviewer, setNewReviewer] = useState("");
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
 
   const { addItem } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     async function fetchVehicle() {
@@ -64,26 +65,27 @@ export default function VehicleDetailView() {
     if (!vehicle) return;
     addItem({
       id: vehicle.id,
-      name: `${vehicle.make} ${vehicle.model}`,
+      name: `${vehicle.brand} ${vehicle.model}`,
       price: vehicle.price,
+      availableQuantity: vehicle.quantity,
       imageUrl: vehicle.imageUrls?.[0] || "/placeholder.png",
     });
   };
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    if (!newReviewer || !newComment) return;
+    if (!newComment) return;
     try {
+      console.log(user);
       const response = await axios.post(
         `http://localhost:8080/api/vehicles/${vid}/reviews`,
         {
-          reviewer: newReviewer,
+          username: user,
           rating: newRating,
           comment: newComment,
         }
       );
       setReviews((prev) => [...prev, response.data]);
-      setNewReviewer("");
       setNewRating(5);
       setNewComment("");
     } catch (err) {
@@ -97,14 +99,17 @@ export default function VehicleDetailView() {
   if (!vehicle) return <p className="p-8">Vehicle not found.</p>;
 
   const {
-    make,
+    brand,
     model,
     price,
+    quantity,
     description,
     mileage,
     year,
     shape,
-    color,
+    exteriorColor,
+    interiorColor,
+    interiorMaterial,
     newVehicle,
     accident,
     hotDeal,
@@ -132,13 +137,13 @@ export default function VehicleDetailView() {
       <div className="flex flex-col lg:flex-row gap-8">
         <img
           src={primaryImage}
-          alt={`${make} ${model}`}
+          alt={`${brand} ${model}`}
           className="w-full lg:w-1/2 h-auto object-cover rounded"
         />
 
         <div className="flex-1">
           <h1 className="text-4xl font-bold mb-2">
-            {make} {model}
+            {brand} {model}
           </h1>
           <p className="text-2xl text-gray-700 mb-4">
             ${price.toLocaleString()}
@@ -156,7 +161,13 @@ export default function VehicleDetailView() {
               <strong>Body Style:</strong> {shape}
             </li>
             <li>
-              <strong>Color:</strong> {color}
+              <strong>Exterior Color:</strong> {exteriorColor}
+            </li>
+            <li>
+              <strong>Interior:</strong> {interiorColor} {interiorMaterial}
+            </li>
+            <li>
+              <strong>Available:</strong> {quantity} units
             </li>
             <li>
               <strong>Status:</strong> {newVehicle ? "New" : "Used"}
@@ -201,7 +212,7 @@ export default function VehicleDetailView() {
                         </span>
                       ))}
                       <span className="ml-2 text-gray-600 text-sm">
-                        by {rev.reviewer}
+                        by {rev.username}
                       </span>
                     </div>
                     <p>{rev.comment}</p>
@@ -212,49 +223,54 @@ export default function VehicleDetailView() {
               <p className="mb-6">No reviews yet. Be the first to review!</p>
             )}
 
-            <form onSubmit={handleReviewSubmit} className="mb-8">
-              <h3 className="text-xl font-semibold mb-2">Write a Review</h3>
-              <div className="mb-4">
-                <label className="block mb-1 font-medium">Name:</label>
-                <input
-                  type="text"
-                  value={newReviewer}
-                  onChange={(e) => setNewReviewer(e.target.value)}
-                  className="w-full border rounded p-2"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1 font-medium">Rating:</label>
-                <select
-                  value={newRating}
-                  onChange={(e) => setNewRating(Number(e.target.value))}
-                  className="border rounded p-2"
+            {/* Review Form - Only show if user is logged in */}
+            {user ? (
+              <form onSubmit={handleReviewSubmit} className="mb-8">
+                <h3 className="text-xl font-semibold mb-2">Write a Review</h3>
+                <div className="mb-4">
+                  <label className="block mb-1 font-medium">Rating:</label>
+                  <select
+                    value={newRating}
+                    onChange={(e) => setNewRating(Number(e.target.value))}
+                    className="border rounded p-2"
+                  >
+                    {[1, 2, 3, 4, 5].map((r) => (
+                      <option key={r} value={r}>
+                        {r} Star{r > 1 ? "s" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label className="block mb-1 font-medium">Comment:</label>
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="w-full border rounded p-2"
+                    rows={4}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="bg-green-600 text-black py-2 px-4 rounded hover:bg-green-700 transition"
                 >
-                  {[1, 2, 3, 4, 5].map((r) => (
-                    <option key={r} value={r}>
-                      {r} Star{r > 1 ? "s" : ""}
-                    </option>
-                  ))}
-                </select>
+                  Submit Review
+                </button>
+              </form>
+            ) : (
+              <div className="mb-8 p-4 bg-gray-100 rounded">
+                <p className="text-gray-600 mb-2">
+                  You must be logged in to write a review.
+                </p>
+                <Link
+                  to="/login"
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  Log in to review
+                </Link>
               </div>
-              <div className="mb-4">
-                <label className="block mb-1 font-medium">Comment:</label>
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  className="w-full border rounded p-2"
-                  rows={4}
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-green-600 text-black py-2 px-4 rounded hover:bg-green-700 transition"
-              >
-                Submit Review
-              </button>
-            </form>
+            )}
           </section>
         </div>
       </div>

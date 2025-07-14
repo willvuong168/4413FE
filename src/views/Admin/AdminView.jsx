@@ -3,15 +3,17 @@ import axios from "axios";
 
 // AdminView: Displays sales and usage reports for administrators
 export default function AdminView() {
-  const [salesData, setSalesData] = useState([]);
+  const [salesData, setSalesData] = useState({ totalRevenue: 0, data: [] });
   const [usageData, setUsageData] = useState([]);
+  const [eventLogData, setEventLogData] = useState([]);
   const [loadingSales, setLoadingSales] = useState(true);
   const [loadingUsage, setLoadingUsage] = useState(true);
+  const [loadingEventLog, setLoadingEventLog] = useState(true);
 
   useEffect(() => {
     async function fetchSales() {
       try {
-        const res = await axios.get("/api/admin/sales-monthly");
+        const res = await axios.get("/api/admin/sales");
         setSalesData(res.data);
       } catch (err) {
         console.error("Error fetching sales data", err);
@@ -29,8 +31,19 @@ export default function AdminView() {
         setLoadingUsage(false);
       }
     }
+    async function fetchEventLog() {
+      try {
+        const res = await axios.get("/api/admin/event-log");
+        setEventLogData(res.data);
+      } catch (err) {
+        console.error("Error fetching event log data", err);
+      } finally {
+        setLoadingEventLog(false);
+      }
+    }
     fetchSales();
     fetchUsage();
+    fetchEventLog();
   }, []);
 
   return (
@@ -39,26 +52,62 @@ export default function AdminView() {
 
       {/* Sales Report Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Monthly Sales Report</h2>
+        <h2 className="text-2xl font-semibold mb-4">Sales Report</h2>
         {loadingSales ? (
           <p>Loading sales data...</p>
+        ) : (
+          <div>
+            <div className="mb-4 p-4 bg-blue-50 rounded">
+              <h3 className="text-lg font-semibold">
+                Total Revenue: ${salesData.totalRevenue?.toLocaleString()}
+              </h3>
+            </div>
+            <table className="min-w-full bg-white rounded-lg shadow">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-4 py-2 text-left">Vehicle ID</th>
+                  <th className="px-4 py-2 text-right">Quantity Sold</th>
+                  <th className="px-4 py-2 text-right">Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                {salesData.data?.map(({ vehicleId, quantitySold, revenue }) => (
+                  <tr key={vehicleId} className="border-t">
+                    <td className="px-4 py-2">{vehicleId}</td>
+                    <td className="px-4 py-2 text-right">{quantitySold}</td>
+                    <td className="px-4 py-2 text-right">
+                      ${revenue.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Usage Report Section */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">
+          Vehicle Usage Statistics
+        </h2>
+        {loadingUsage ? (
+          <p>Loading usage data...</p>
         ) : (
           <table className="min-w-full bg-white rounded-lg shadow">
             <thead>
               <tr className="bg-gray-100">
-                <th className="px-4 py-2 text-left">Month</th>
-                <th className="px-4 py-2 text-right">Items Sold</th>
-                <th className="px-4 py-2 text-right">Revenue</th>
+                <th className="px-4 py-2 text-left">Vehicle ID</th>
+                <th className="px-4 py-2 text-right">Views</th>
+                <th className="px-4 py-2 text-right">Purchases</th>
               </tr>
             </thead>
             <tbody>
-              {salesData.map(({ month, itemsSold, revenue }) => (
-                <tr key={month} className="border-t">
-                  <td className="px-4 py-2">{month}</td>
-                  <td className="px-4 py-2 text-right">{itemsSold}</td>
-                  <td className="px-4 py-2 text-right">
-                    ${revenue.toLocaleString()}
-                  </td>
+              {usageData.map(({ vehicleId, views, purchases }) => (
+                <tr key={vehicleId} className="border-t">
+                  <td className="px-4 py-2">{vehicleId}</td>
+                  <td className="px-4 py-2 text-right">{views}</td>
+                  <td className="px-4 py-2 text-right">{purchases}</td>
                 </tr>
               ))}
             </tbody>
@@ -66,11 +115,11 @@ export default function AdminView() {
         )}
       </section>
 
-      {/* Usage Report Section */}
+      {/* Event Log Section */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Website Usage Events</h2>
-        {loadingUsage ? (
-          <p>Loading usage data...</p>
+        <h2 className="text-2xl font-semibold mb-4">Event Log</h2>
+        {loadingEventLog ? (
+          <p>Loading event log data...</p>
         ) : (
           <table className="min-w-full bg-white rounded-lg shadow">
             <thead>
@@ -82,14 +131,16 @@ export default function AdminView() {
               </tr>
             </thead>
             <tbody>
-              {usageData.map(({ day, eventType, vid, ipAddress }, idx) => (
-                <tr key={idx} className="border-t">
-                  <td className="px-4 py-2">{day}</td>
-                  <td className="px-4 py-2 capitalize">{eventType}</td>
-                  <td className="px-4 py-2">{vid}</td>
-                  <td className="px-4 py-2">{ipAddress}</td>
-                </tr>
-              ))}
+              {eventLogData.map(
+                ({ day, eventType, vehicleId, ipAddress }, idx) => (
+                  <tr key={idx} className="border-t">
+                    <td className="px-4 py-2">{day}</td>
+                    <td className="px-4 py-2 capitalize">{eventType}</td>
+                    <td className="px-4 py-2">{vehicleId}</td>
+                    <td className="px-4 py-2">{ipAddress}</td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
         )}

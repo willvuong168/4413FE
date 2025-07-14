@@ -12,9 +12,9 @@ export default function Homepage() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:8080/api/vehicles/deals"
+          "http://localhost:8080/api/vehicles/deals?page=0&size=50"
         );
-        setFeaturedVehicles(response.data);
+        setFeaturedVehicles(response.data.content);
       } catch (error) {
         console.error("Failed to fetch hot deals", error);
       } finally {

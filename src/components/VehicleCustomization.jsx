@@ -7,7 +7,7 @@ import { CartContext } from "../context/CartContext";
  * Lets users customize vehicle options before adding to cart.
  * Props:
  * - vehicle: {
- *     id, price, vin, shape, make, model, color,
+ *     id, price, shape, brand, model, exteriorColor,
  *     year, mileage, description, newVehicle, accident, hotDeal,
  *     imageUrls: string[]
  *   }
@@ -17,11 +17,10 @@ export default function VehicleCustomization({ vehicle }) {
   const {
     id,
     price,
-    vin,
     shape,
-    make,
+    brand,
     model,
-    color, // default exterior color
+    exteriorColor, // default exterior color
     imageUrls = [], // array of image URLs
   } = vehicle;
 
@@ -43,7 +42,7 @@ export default function VehicleCustomization({ vehicle }) {
     "Synthetic Leather",
   ];
 
-  const [selectedExterior, setSelectedExterior] = useState(color);
+  const [selectedExterior, setSelectedExterior] = useState(exteriorColor);
   const [selectedInteriorColor, setSelectedInteriorColor] = useState(
     interiorColorOptions[0]
   );
@@ -54,9 +53,8 @@ export default function VehicleCustomization({ vehicle }) {
   const handleAdd = () => {
     const customizedItem = {
       id,
-      vin,
       shape,
-      make,
+      brand,
       model,
       price,
       imageUrl: imageUrls[0] || "", // fallback if empty
@@ -72,7 +70,7 @@ export default function VehicleCustomization({ vehicle }) {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md space-y-4 mt-8">
       <h2 className="text-2xl font-semibold">
-        Customize Your {make} {model}
+        Customize Your {brand} {model}
       </h2>
 
       {/* Exterior Color */}

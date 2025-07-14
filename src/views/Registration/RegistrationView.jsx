@@ -14,6 +14,8 @@ export default function RegistrationView() {
     username: "",
     password: "",
     email: "",
+    firstName: "",
+    lastName: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,13 @@ export default function RegistrationView() {
 
   const toggleMode = () => {
     setError("");
-    setFormData({ username: "", password: "", email: "" });
+    setFormData({
+      username: "",
+      password: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+    });
     setIsLogin((prev) => !prev);
   };
 
@@ -40,7 +48,13 @@ export default function RegistrationView() {
       const endpoint = isLogin ? "/api/auth/login" : "/api/auth/signup";
       const payload = isLogin
         ? { username: formData.username, password: formData.password }
-        : formData;
+        : {
+            username: formData.username,
+            password: formData.password,
+            email: formData.email,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+          };
       const res = await axios.post(endpoint, payload);
       // assume API returns { user, token }
       setUser(formData.username);
@@ -74,17 +88,47 @@ export default function RegistrationView() {
         </div>
 
         {!isLogin && (
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full border rounded p-2"
-            />
-          </div>
+          <>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                First Name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+                className="w-full border rounded p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Last Name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+                className="w-full border rounded p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full border rounded p-2"
+              />
+            </div>
+          </>
         )}
 
         <div>
@@ -119,7 +163,7 @@ export default function RegistrationView() {
       <p className="mt-4 text-center text-sm">
         {isLogin ? (
           <>
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <button
               onClick={toggleMode}
               className="text-blue-600 hover:underline"

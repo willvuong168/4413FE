@@ -35,7 +35,7 @@ export default function ShoppingCartView() {
         {cartItems.map((item) => {
           const {
             id,
-            make,
+            brand,
             model,
             price,
             quantity,
@@ -48,14 +48,14 @@ export default function ShoppingCartView() {
               <div className="w-24 h-24 flex-shrink-0">
                 <img
                   src={imageUrl || "/placeholder.png"}
-                  alt={`${make} ${model}`}
+                  alt={`${brand} ${model}`}
                   className="object-cover w-full h-full rounded"
                 />
               </div>
 
               <div className="flex-1">
                 <h2 className="text-lg font-semibold">
-                  {make} {model}
+                  {brand} {model}
                 </h2>
                 <p className="text-gray-600">
                   Price: ${price.toLocaleString()}
@@ -84,10 +84,15 @@ export default function ShoppingCartView() {
                     id={`qty-${id}`}
                     type="number"
                     min="1"
+                    max={item.availableQuantity}
                     value={quantity}
-                    onChange={(e) =>
-                      updateQuantity(id, parseInt(e.target.value, 10))
-                    }
+                    onChange={(e) => {
+                      let val = parseInt(e.target.value, 10);
+                      if (isNaN(val) || val < 1) val = 1;
+                      if (val > item.availableQuantity)
+                        val = item.availableQuantity;
+                      updateQuantity(id, val);
+                    }}
                     className="w-16 border rounded p-1"
                   />
                 </div>

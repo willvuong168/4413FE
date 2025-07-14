@@ -5,6 +5,7 @@ import Homepage from "./views/Homepage";
 import CatalogView from "./views/Catalog/CatalogView";
 import ShoppingCartView from "./views/ShoppingCart/ShoppingCartView";
 import CheckoutView from "./views/Checkout/CheckoutView";
+import ConfirmationView from "./views/Checkout/ConfirmationView";
 import RegistrationView from "./views/Registration/RegistrationView";
 import AdminView from "./views/Admin/AdminView";
 import NotFoundView from "./views/NotFoundView";
@@ -23,10 +24,12 @@ export default function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/catalog" element={<CatalogView />} />
         <Route path="/register" element={<RegistrationView />} />
+        <Route path="/login" element={<RegistrationView />} />
         <Route path="/compare" element={<CompareView />} />
         {/* Cart & checkout */}
         <Route path="/cart" element={<ShoppingCartView />} />
         <Route path="/checkout" element={<CheckoutView />} />
+        <Route path="/confirmation" element={<ConfirmationView />} />
 
         {/* Admin analytics */}
         <Route path="/admin" element={<AdminView />} />
