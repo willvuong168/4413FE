@@ -33,11 +33,9 @@ Username: admin1
 Password: password1
 
 Customer Credentials:
-Username: user1
-Password: password1
-
-For customer credentials, we have 9 accounts created. To access user2 to user10:
+We have users 2 to 10. Access customer accounts using the following credentials:
+```
 Username: user<#>        eg. user7
 Password: password<#>    eg. password7
-
+```
 
