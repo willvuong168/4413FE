@@ -58,8 +58,8 @@ export default function Header() {
 
           {user ? (
             <>
-              {/* Only show Admin if the logged-in user's username is "user1" */}
-              {user === "user1" && (
+              {/* Only show Admin if the logged-in user's username is "admin1" */}
+              {user === "admin1" && (
                 <NavLink
                   to="/admin"
                   className={({ isActive }) =>
