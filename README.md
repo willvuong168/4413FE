@@ -4,6 +4,7 @@
 ## Prerequisites
 - Node.js (>= 14.x)
 - npm
+- IMPORTANT: make sure browser is not in dark mode, some components may not be able to be seen.
 
 ## Check your verisons of these by running:
 ```
