@@ -1,7 +1,5 @@
-# Multi-stage build for React Vite application
-
-# Stage 1: Build stage
-FROM node:18-alpine AS build
+# Multi-stage build for React application
+FROM node:18-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -18,14 +16,14 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Stage 2: Production stage
-FROM nginx:alpine
+# Production stage
+FROM nginx:alpine AS production
 
-# Copy built application from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy built application from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom nginx configuration (optional)
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port 80
 EXPOSE 80

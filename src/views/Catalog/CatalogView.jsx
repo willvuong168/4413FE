@@ -20,7 +20,7 @@ export default function CatalogView() {
       setError(null);
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/vehicles?page=0&size=50"
+          "http://159.203.37.5:8080/api/vehicles?page=0&size=50"
         );
         // API returns paginated data with 'content' array
         setVehicles(response.data.content || []);

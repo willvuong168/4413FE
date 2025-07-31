@@ -27,7 +27,7 @@ export default function VehicleDetailView() {
       setError(null);
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/vehicles/${vid}`
+          `http://159.203.37.5:8080/api/vehicles/${vid}`
         );
         setVehicle(response.data);
       } catch (err) {
@@ -47,7 +47,7 @@ export default function VehicleDetailView() {
       setReviewError(null);
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/vehicles/${vid}/reviews`
+          `http://159.203.37.5:8080/api/vehicles/${vid}/reviews`
         );
         setReviews(response.data);
       } catch (err) {
@@ -78,7 +78,7 @@ export default function VehicleDetailView() {
     try {
       console.log(user);
       const response = await axios.post(
-        `http://localhost:8080/api/vehicles/${vid}/reviews`,
+        `http://159.203.37.5:8080/api/vehicles/${vid}/reviews`,
         {
           username: user,
           rating: newRating,
