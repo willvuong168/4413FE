@@ -46,8 +46,8 @@ export default function RegistrationView() {
 
     try {
       const endpoint = isLogin
-        ? "https://159.203.37.5:8080/api/auth/login"
-        : "https://159.203.37.5:8080/api/auth/signup";
+        ? "http://159.203.37.5:8080/api/auth/login"
+        : "http://159.203.37.5:8080/api/auth/signup";
       console.log(endpoint);
       const payload = isLogin
         ? { username: formData.username, password: formData.password }
