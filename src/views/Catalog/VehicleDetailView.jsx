@@ -26,9 +26,7 @@ export default function VehicleDetailView() {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(
-          `http://159.203.37.5:8080/api/vehicles/${vid}`
-        );
+        const response = await axios.get(`/api/vehicles/${vid}`);
         setVehicle(response.data);
       } catch (err) {
         console.error("Failed to fetch vehicle details", err);
@@ -46,9 +44,7 @@ export default function VehicleDetailView() {
       setReviewLoading(true);
       setReviewError(null);
       try {
-        const response = await axios.get(
-          `http://159.203.37.5:8080/api/vehicles/${vid}/reviews`
-        );
+        const response = await axios.get(`/api/vehicles/${vid}/reviews`);
         setReviews(response.data);
       } catch (err) {
         console.error("Failed to fetch reviews", err);
@@ -77,14 +73,11 @@ export default function VehicleDetailView() {
     if (!newComment) return;
     try {
       console.log(user);
-      const response = await axios.post(
-        `http://159.203.37.5:8080/api/vehicles/${vid}/reviews`,
-        {
-          username: user,
-          rating: newRating,
-          comment: newComment,
-        }
-      );
+      const response = await axios.post(`/api/vehicles/${vid}/reviews`, {
+        username: user,
+        rating: newRating,
+        comment: newComment,
+      });
       setReviews((prev) => [...prev, response.data]);
       setNewRating(5);
       setNewComment("");
