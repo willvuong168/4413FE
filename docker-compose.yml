@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
       target: production
     ports:
-      - "80:80"
+      - "8081:80"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
