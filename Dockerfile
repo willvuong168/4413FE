@@ -25,7 +25,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy custom nginx configuration
 # COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80
+# Expose port 8081
 EXPOSE 8081
 
 # Start nginx

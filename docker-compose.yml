@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
       target: production
     ports:
-      - "8081:80"
+      - "8081:8081"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
       dockerfile: Dockerfile
       target: production
     ports:
-      - "3000:80"
+      - "3000:8081"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
