@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://159.203.37.5:8080",
+        target: "https://4413groupa.me:8081",
         changeOrigin: true, // rewrites Host header to match target
         secure: false, // if you’re running HTTPS on 8080 with a self-signed cert
         rewrite: (path) => path.replace(/^\/api/, "/api"),

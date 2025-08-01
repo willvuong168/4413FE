@@ -132,7 +132,7 @@ On Linux/macOS, you might need to run Docker commands with sudo or add your user
 
 ## API Proxy Configuration
 
-The application is configured to proxy API requests to `http://159.203.37.5:8080`. This configuration is in `vite.config.js` and will work in both development and production environments.
+The application is configured to proxy API requests to `https://4413groupa.me:8081`. This configuration is in `vite.config.js` and will work in both development and production environments.
 
 ## Security Notes
 
