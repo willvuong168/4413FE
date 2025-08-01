@@ -11,7 +11,9 @@ export default function Homepage() {
     async function fetchHotDeals() {
       try {
         setLoading(true);
-        const response = await axios.get("/api/vehicles/deals?page=0&size=50");
+        const response = await axios.get(
+          "https://4413groupa.me/api/vehicles/deals?page=0&size=50"
+        );
         setFeaturedVehicles(response.data.content);
       } catch (error) {
         console.error("Failed to fetch hot deals", error);
