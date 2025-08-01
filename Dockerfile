@@ -23,10 +23,10 @@ FROM nginx:alpine AS production
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
-# COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 8081
-EXPOSE 8081
+# Expose port 80
+EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"] 

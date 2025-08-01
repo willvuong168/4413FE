@@ -58,7 +58,7 @@ docker build -f Dockerfile -t 4413fe-prod .
 docker run -p 5173:5173 -v $(pwd):/app 4413fe-dev
 
 # Run production container
-docker run -p 8081:8081 4413fe-prod
+docker run -p 80:80 4413fe-prod
 ```
 
 ### Stop Services
@@ -107,11 +107,11 @@ The application uses the following environment variables:
 
 ### Port Already in Use
 
-If port 8081 or 5173 is already in use, you can modify the port mapping in `docker-compose.yml`:
+If port 80 or 5173 is already in use, you can modify the port mapping in `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "8080:8081" # Use port 8080 instead of 8081
+  - "8080:80" # Use port 8080 instead of 80
 ```
 
 ### Build Issues
@@ -132,7 +132,7 @@ On Linux/macOS, you might need to run Docker commands with sudo or add your user
 
 ## API Proxy Configuration
 
-The application is configured to proxy API requests to `https://4413groupa.me:8081`. This configuration is in `vite.config.js` and will work in both development and production environments.
+The application is configured to proxy API requests to `http://4413groupa.me:8081`. This configuration is in `vite.config.js` and will work in both development and production environments.
 
 ## Security Notes
 
