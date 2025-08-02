@@ -13,7 +13,7 @@ export default function AdminView() {
   useEffect(() => {
     async function fetchSales() {
       try {
-        const res = await axios.get("/api/admin/sales");
+        const res = await axios.get("https://4413groupa.me/api/admin/sales");
         setSalesData(res.data);
       } catch (err) {
         console.error("Error fetching sales data", err);
@@ -23,7 +23,7 @@ export default function AdminView() {
     }
     async function fetchUsage() {
       try {
-        const res = await axios.get("https://4413groupa.me/admin/usage");
+        const res = await axios.get("https://4413groupa.me/api/admin/usage");
         setUsageData(res.data);
       } catch (err) {
         console.error("Error fetching usage data", err);
