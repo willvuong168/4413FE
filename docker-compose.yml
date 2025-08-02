@@ -78,7 +78,7 @@ services:
       context: .
       target: runner
     ports:
-      - "4000:80"
+      - "8081:8081"
     environment:
       - NODE_ENV=production
     profiles:
