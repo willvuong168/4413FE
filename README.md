@@ -32,7 +32,7 @@ docker compose --profile dev up
 # Build and start production server
 docker compose --profile prod up
 
-# Access the app at http://localhost:80
+# Access the app at http://localhost:8888
 ```
 
 ### Production Mode (Custom Port)
