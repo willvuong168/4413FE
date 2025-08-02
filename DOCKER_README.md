@@ -37,10 +37,10 @@ docker compose --profile prod up --build
 This will:
 
 - Build the production image with nginx
-- Serve the optimized build on port 80
+- Serve the optimized build on port 3001
 - Use nginx for better performance and security
 
-Access the application at: http://localhost
+Access the application at: http://localhost:3001
 
 ### Production Mode (Custom Port)
 
@@ -71,7 +71,7 @@ docker build --target runner -t 4413fe-prod .
 docker run -p 5173:5173 -v $(pwd):/app 4413fe-dev npm run dev -- --host 0.0.0.0
 
 # Production
-docker run -p 80:80 4413fe-prod
+docker run -p 3001:80 4413fe-prod
 ```
 
 ### Stop containers
