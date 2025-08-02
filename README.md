@@ -3,50 +3,53 @@
 ## Prerequisites
 
 - Node.js (>= 14.x) and npm (for local development)
-- Docker and Docker Compose (for containerized deployment)
+- Docker and Docker Compose (for containerized development/deployment)
 - IMPORTANT: make sure browser is not in dark mode, some components may not be able to be seen.
 
-## Check your versions of these by running:
+## Quick Start
 
-```
-node -v
-npm -v
-docker --version
-docker compose version
-```
+### Option 1: Docker (Recommended)
 
-## Quick Start with Docker (Recommended)
-
-### Development Mode
+#### Development with Docker:
 
 ```bash
-# Start development server with hot reload
-docker compose --profile dev up
+git clone https://github.com/willvuong168/4413FE.git
+cd 4413FE
+
+# Run in development mode with hot reload
+docker compose --profile dev up --build
 
 # Access the app at http://localhost:5173
 ```
 
-### Production Mode
+#### Production with Docker:
 
 ```bash
-# Build and start production server
-docker compose --profile prod up
-
-# Access the app at http://localhost:8888
-```
-
-### Production Mode (Custom Port)
-
-```bash
-# Start production server on port 3000
-docker compose --profile prod-custom up
+# Build and run production version
+docker compose --profile prod up --build
 
 # Access the app at http://localhost:3000
 ```
 
-## Local Development (Alternative)
+#### Development with API Proxy:
 
-### Clone the repository and install dependencies:
+```bash
+# Run with nginx proxy for API routing
+docker compose --profile dev-proxy up --build
+
+# Access the app at http://localhost:8080
+```
+
+### Option 2: Local Development
+
+#### Check your versions:
+
+```bash
+node -v
+npm -v
+```
+
+#### Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/willvuong168/4413FE.git
@@ -54,7 +57,7 @@ cd 4413FE
 npm install
 ```
 
-### Run the React app:
+#### Run the React app:
 
 ```bash
 npm run dev

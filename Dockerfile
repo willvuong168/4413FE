@@ -1,10 +1,12 @@
-# Frontend Dockerfile for React + Vite application
-FROM node:18-alpine as build
+# Multi-stage Dockerfile for React/Vite application
+
+# Stage 1: Build the application
+FROM node:18-alpine AS build
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
@@ -16,17 +18,37 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine
+# Stage 2: Production server with Nginx
+FROM nginx:alpine AS production
 
-# Copy built assets from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy nginx configuration
+# Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy built application from build stage
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
+
+# Development stage (optional)
+FROM node:18-alpine AS development
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose Vite dev server port
+EXPOSE 5173
+
+# Start development server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

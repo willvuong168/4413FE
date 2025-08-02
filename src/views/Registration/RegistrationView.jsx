@@ -46,8 +46,8 @@ export default function RegistrationView() {
 
     try {
       const endpoint = isLogin
-        ? "http://localhost:8080/api/auth/login"
-        : "http://localhost:8080/api/auth/signup";
+        ? "https://4413groupa.me/api/auth/login"
+        : "https://4413groupa.me/api/auth/signup";
       console.log(endpoint);
       const payload = isLogin
         ? { username: formData.username, password: formData.password }

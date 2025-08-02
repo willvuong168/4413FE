@@ -1,237 +1,153 @@
-# Docker Setup for GreenDrive Application
+# Docker Setup for GreenDrive Frontend
 
-This document explains how to run the complete GreenDrive application (frontend + backend + database) using Docker.
+This document provides detailed information about the Docker configuration for the GreenDrive React application.
 
-## Prerequisites
+## Docker Architecture
 
-- Docker and Docker Compose installed on your system
-- Your backend application in a directory relative to this frontend (adjust the path in `docker-compose.yml` if needed)
+The project uses a multi-stage Dockerfile with three targets:
 
-## Quick Start
+1. **Development**: For local development with hot reload
+2. **Build**: Intermediate stage for building the application
+3. **Production**: Optimized production build served with Nginx
 
-### 1. Build and Run All Services
+## Files Overview
 
-```bash
-docker compose up --build
-```
+### Dockerfile
 
-This will start:
+- Multi-stage build configuration
+- Development stage with Node.js and Vite dev server
+- Production stage with Nginx serving static files
+- Optimized for both development and production use
 
-- **Frontend** (React + Vite): http://localhost:3000
-- **Backend** (Spring Boot): http://localhost:8080
-- **Database** (MySQL): localhost:3306
+### docker-compose.yml
 
-### 2. Run in Background
+Uses Docker Compose profiles for different environments:
 
-```bash
-docker compose up -d --build
-```
+- `dev`: Development mode with hot reload (port 5173)
+- `prod`: Production mode with Nginx (port 3000)
+- `dev-proxy`: Development with Nginx proxy for API routing (port 8080)
 
-### 3. Stop All Services
+### nginx.conf
 
-```bash
-docker compose down
-```
+Production Nginx configuration featuring:
 
-### 4. Stop and Remove Volumes (Clean Database)
+- SPA routing support (`try_files` directive)
+- API proxy to `https://4413groupa.me`
+- Gzip compression
+- Security headers
+- Static asset caching
 
-```bash
-docker compose down -v
-```
+### nginx-dev.conf
 
-## Service Details
+Development Nginx proxy configuration:
 
-### Frontend (React + Vite)
+- Proxies frontend requests to Vite dev server
+- Handles WebSocket connections for Hot Module Replacement (HMR)
+- Proxies API requests to external backend
 
-- **Container**: `greendrive-frontend`
-- **Port**: 3000 (mapped to container port 80)
-- **Technology**: React with Vite, served by Nginx
-- **API Proxy**: All `/api/*` requests are automatically proxied to the backend
+### .dockerignore
 
-### Backend (Spring Boot)
+Excludes unnecessary files from Docker build context:
 
-- **Container**: `greendrive-backend`
-- **Port**: 8080
-- **Technology**: Spring Boot with JPA/Hibernate
-- **Database**: Connects to MySQL container
-- **Health Check**: Available at `/actuator/health`
+- Node modules and build artifacts
+- Git and IDE files
+- Environment files
+- Docker configuration files
 
-### Database (MySQL)
+## Usage
 
-- **Container**: `greendrive-mysql`
-- **Port**: 3306
-- **Database**: `greendrive_db`
-- **Username**: `root` / `greendrive_user`
-- **Password**: `12345678` / `greendrive_pass`
-- **Data Persistence**: Volume `mysql_data`
-
-## Development Workflow
-
-### Frontend Development Only
-
-If you want to run only the frontend for development:
+### Development Mode
 
 ```bash
-# Run backend and database
-docker compose up mysql backend -d
+# Start development server with hot reload
+docker compose --profile dev up --build
 
-# Run frontend in development mode (with hot reload)
-npm run dev
+# Run in detached mode
+docker compose --profile dev up -d --build
+
+# Stop services
+docker compose --profile dev down
 ```
 
-### Backend Development Only
-
-If you want to develop the backend while running containerized database:
+### Production Mode
 
 ```bash
-# Run only the database
-docker compose up mysql -d
+# Build and start production server
+docker compose --profile prod up --build
 
-# Run your backend locally (it will connect to the containerized MySQL)
+# Run in detached mode
+docker compose --profile prod up -d --build
+
+# Stop services
+docker compose --profile prod down
 ```
 
-### View Logs
+### Development with API Proxy
 
 ```bash
-# All services
-docker compose logs -f
+# Start development with Nginx proxy
+docker compose --profile dev-proxy up --build
 
-# Specific service
-docker compose logs -f frontend
-docker compose logs -f backend
-docker compose logs -f mysql
+# This setup provides a single entry point for both frontend and API calls
 ```
 
-### Database Management
+## Environment Variables
 
-#### Connect to MySQL
+The application supports the following environment variables:
 
-```bash
-docker compose exec mysql mysql -u root -p greendrive_db
-# Password: 12345678
-```
+- `NODE_ENV`: Set to 'development' or 'production'
+- `VITE_API_URL`: Backend API URL (defaults to https://4413groupa.me)
 
-#### Backup Database
+## Port Configuration
 
-```bash
-docker compose exec mysql mysqldump -u root -p greendrive_db > backup.sql
-```
+- **Development**: 5173 (Vite dev server)
+- **Production**: 3000 (Nginx)
+- **Dev Proxy**: 8080 (Nginx proxy)
 
-#### Restore Database
+## API Proxy Configuration
 
-```bash
-docker compose exec -T mysql mysql -u root -p greendrive_db < backup.sql
-```
+The application is configured to proxy `/api/*` requests to the backend server at `https://4413groupa.me`. This is handled differently in each mode:
 
-## Configuration
+- **Development**: Vite's built-in proxy (vite.config.js)
+- **Production**: Nginx proxy_pass directive
+- **Dev Proxy**: Nginx proxy for both frontend and API
 
-### Environment Variables
+## Build Optimization
 
-You can override environment variables by creating a `.env` file:
+The production build includes:
 
-```env
-# Database
-MYSQL_ROOT_PASSWORD=your_password
-MYSQL_DATABASE=your_database
-MYSQL_USER=your_user
-MYSQL_PASSWORD=your_user_password
-
-# Backend
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRATION=3600000
-
-# Ports
-FRONTEND_PORT=3000
-BACKEND_PORT=8080
-MYSQL_PORT=3306
-```
-
-### Backend Directory
-
-Update the backend build context in `docker-compose.yml`:
-
-```yaml
-backend:
-  build: ../your-backend-directory # Adjust this path
-```
-
-### Database Initialization
-
-If you have SQL initialization scripts, place them in a `mysql/init/` directory and uncomment the volume mapping in `docker-compose.yml`:
-
-```yaml
-volumes:
-  - ./mysql/init:/docker-entrypoint-initdb.d
-```
+- Multi-stage Docker build for smaller image size
+- Gzip compression for static assets
+- Long-term caching headers for static files
+- Security headers for enhanced protection
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Port Already in Use**
+1. **Port conflicts**: Ensure ports 5173, 3000, and 8080 are not in use
+2. **API connectivity**: Verify the backend at https://4413groupa.me is accessible
+3. **Hot reload not working**: Make sure you're using the `dev` profile and the volume mounts are correct
 
-   ```bash
-   # Check what's using the port
-   lsof -i :3000  # or :8080, :3306
-
-   # Change ports in docker-compose.yml if needed
-   ```
-
-2. **Database Connection Issues**
-
-   ```bash
-   # Check if MySQL is healthy
-   docker compose ps
-
-   # View MySQL logs
-   docker compose logs mysql
-   ```
-
-3. **Frontend Can't Reach Backend**
-
-   - Ensure both services are on the same network
-   - Check the nginx proxy configuration in `nginx.conf`
-   - Verify the backend container name matches in nginx config
-
-4. **Permission Issues**
-   ```bash
-   # Fix file permissions
-   sudo chown -R $USER:$USER .
-   ```
-
-### Reset Everything
+### Useful Commands
 
 ```bash
-# Stop all containers and remove volumes
-docker compose down -v
+# View logs
+docker compose --profile dev logs -f
 
-# Remove all images
-docker compose down --rmi all
+# Rebuild without cache
+docker compose --profile dev build --no-cache
 
-# Rebuild everything
-docker compose up --build
+# Remove all containers and volumes
+docker compose --profile dev down -v
+
+# Access container shell
+docker compose --profile dev exec app-dev sh
 ```
 
-## Production Considerations
+## Performance Considerations
 
-For production deployment:
-
-1. **Environment Variables**: Use proper secrets management
-2. **Database**: Use external managed database service
-3. **SSL/HTTPS**: Add SSL termination
-4. **Monitoring**: Add health checks and monitoring
-5. **Scaling**: Use orchestration tools like Kubernetes
-
-## Network Architecture
-
-```
-Internet
-    ↓
-Frontend (Nginx) :3000
-    ↓ (proxy /api/*)
-Backend (Spring Boot) :8080
-    ↓ (JDBC)
-MySQL Database :3306
-```
-
-All services communicate through the `greendrive-network` Docker network for security and isolation.
+- The production image uses Alpine Linux for minimal size
+- Static assets are served directly by Nginx with appropriate caching headers
+- Gzip compression is enabled for better transfer speeds
+- Development mode includes volume mounting for instant file changes
