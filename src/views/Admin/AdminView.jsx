@@ -23,7 +23,7 @@ export default function AdminView() {
     }
     async function fetchUsage() {
       try {
-        const res = await axios.get("/api/admin/usage");
+        const res = await axios.get("https://4413groupa.me/admin/usage");
         setUsageData(res.data);
       } catch (err) {
         console.error("Error fetching usage data", err);
@@ -33,7 +33,9 @@ export default function AdminView() {
     }
     async function fetchEventLog() {
       try {
-        const res = await axios.get("/api/admin/event-log");
+        const res = await axios.get(
+          "https://4413groupa.me/api/admin/event-log"
+        );
         setEventLogData(res.data);
       } catch (err) {
         console.error("Error fetching event log data", err);

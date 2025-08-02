@@ -45,7 +45,10 @@ export default function CheckoutView() {
         ),
       };
       console.log(orderPayload);
-      const res = await axios.post("/api/orders/place", orderPayload);
+      const res = await axios.post(
+        "https://4413groupa.me/api/orders/place",
+        orderPayload
+      );
       console.log(res.data);
       if (res.data.order.status === "ORDERED") {
         clearCart();

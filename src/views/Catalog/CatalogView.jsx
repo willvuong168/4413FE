@@ -19,7 +19,9 @@ export default function CatalogView() {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get("/api/vehicles?page=0&size=50");
+        const response = await axios.get(
+          "https://4413groupa.me/api/vehicles?page=0&size=50"
+        );
         // API returns paginated data with 'content' array
         setVehicles(response.data.content || []);
       } catch (err) {
