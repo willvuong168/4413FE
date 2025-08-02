@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  # React Frontend
+  frontend:
+    build: .
+    container_name: greendrive-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - greendrive-network
+
   # MySQL Database
   mysql:
     image: mysql:8.0
@@ -15,7 +27,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
+      # Uncomment the line below if you have database initialization scripts
+      # - ./mysql/init:/docker-entrypoint-initdb.d
     networks:
       - greendrive-network
     healthcheck:
@@ -23,11 +36,9 @@ services:
       timeout: 20s
       retries: 10
 
-  # Spring Boot Application
+  # Spring Boot Backend (assuming it's in a separate directory)
   backend:
-    build: 
-      context: ../GreenDrive-Backend
-      dockerfile: Dockerfile
+    build: ../GreenDrive-Backend  # Adjust this path to your backend directory
     container_name: greendrive-backend
     restart: unless-stopped
     ports:
@@ -52,62 +63,10 @@ services:
       retries: 5
       start_period: 60s
 
-  # Frontend Development service
-  frontend-dev:
-    build:
-      context: .
-      target: builder
-    ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    command: npm run dev -- --host 0.0.0.0
-    profiles:
-      - dev
-    networks:
-      - greendrive-network
-    depends_on:
-      - backend
-
-  # Frontend Production service
-  frontend-prod:
-    build:
-      context: .
-      target: runner
-    ports:
-      - "8081:8081"
-    environment:
-      - NODE_ENV=production
-    profiles:
-      - prod
-    networks:
-      - greendrive-network
-    depends_on:
-      - backend
-
-  # Frontend Production service with custom port
-  frontend-prod-custom:
-    build:
-      context: .
-      target: runner
-    ports:
-      - "3000:80"
-    environment:
-      - NODE_ENV=production
-    profiles:
-      - prod-custom
-    networks:
-      - greendrive-network
-    depends_on:
-      - backend
-
 volumes:
   mysql_data:
     driver: local
 
 networks:
   greendrive-network:
-    driver: bridge 
+    driver: bridge

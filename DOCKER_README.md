@@ -1,145 +1,237 @@
-# Docker Setup for 4413FE React Application
+# Docker Setup for GreenDrive Application
 
-This project has been dockerized for both development and production environments.
+This document explains how to run the complete GreenDrive application (frontend + backend + database) using Docker.
 
 ## Prerequisites
 
-- Docker
-- Docker Compose
+- Docker and Docker Compose installed on your system
+- Your backend application in a directory relative to this frontend (adjust the path in `docker-compose.yml` if needed)
 
 ## Quick Start
 
-### Development Mode
-
-To run the application in development mode with hot reloading:
+### 1. Build and Run All Services
 
 ```bash
-docker compose --profile dev up --build
+docker compose up --build
 ```
 
-This will:
+This will start:
 
-- Build the development image
-- Start the development server on port 5173
-- Enable hot reloading for code changes
-- Mount the source code as a volume for live updates
+- **Frontend** (React + Vite): http://localhost:3000
+- **Backend** (Spring Boot): http://localhost:8080
+- **Database** (MySQL): localhost:3306
 
-Access the application at: http://localhost:5173
-
-### Production Mode
-
-To run the application in production mode:
+### 2. Run in Background
 
 ```bash
-docker compose --profile prod up --build
+docker compose up -d --build
 ```
 
-This will:
-
-- Build the production image with nginx
-- Serve the optimized build on port 4000
-- Use nginx for better performance and security
-
-Access the application at: http://localhost:4000
-
-### Production Mode (Custom Port)
-
-To run production mode on a custom port (e.g., 3000):
+### 3. Stop All Services
 
 ```bash
-docker compose --profile prod-custom up --build
-```
-
-Access the application at: http://localhost:3000
-
-## Docker Commands
-
-### Build the image manually
-
-```bash
-# Build development image
-docker build --target builder -t 4413fe-dev .
-
-# Build production image
-docker build --target runner -t 4413fe-prod .
-```
-
-### Run containers manually
-
-```bash
-# Development
-docker run -p 5173:5173 -v $(pwd):/app 4413fe-dev npm run dev -- --host 0.0.0.0
-
-# Production
-docker run -p 4000:80 4413fe-prod
-```
-
-### Stop containers
-
-```bash
-# Stop all containers
 docker compose down
+```
 
-# Stop and remove volumes
+### 4. Stop and Remove Volumes (Clean Database)
+
+```bash
 docker compose down -v
 ```
 
-## Dockerfile Structure
+## Service Details
 
-The Dockerfile uses a multi-stage build approach:
+### Frontend (React + Vite)
 
-1. **Base Stage**: Uses Node.js 18 Alpine as the base image
-2. **Dependencies Stage**: Installs production dependencies
-3. **Builder Stage**: Builds the React application
-4. **Runner Stage**: Uses nginx to serve the built application
+- **Container**: `greendrive-frontend`
+- **Port**: 3000 (mapped to container port 80)
+- **Technology**: React with Vite, served by Nginx
+- **API Proxy**: All `/api/*` requests are automatically proxied to the backend
 
-## Nginx Configuration
+### Backend (Spring Boot)
 
-The `nginx.conf` file includes:
+- **Container**: `greendrive-backend`
+- **Port**: 8080
+- **Technology**: Spring Boot with JPA/Hibernate
+- **Database**: Connects to MySQL container
+- **Health Check**: Available at `/actuator/health`
 
-- Client-side routing support (SPA routing)
-- Gzip compression
-- Static asset caching
-- Security headers
-- Proper MIME types
+### Database (MySQL)
 
-## Environment Variables
+- **Container**: `greendrive-mysql`
+- **Port**: 3306
+- **Database**: `greendrive_db`
+- **Username**: `root` / `greendrive_user`
+- **Password**: `12345678` / `greendrive_pass`
+- **Data Persistence**: Volume `mysql_data`
 
-The application supports the following environment variables:
+## Development Workflow
 
-- `NODE_ENV`: Set to 'development' or 'production'
+### Frontend Development Only
+
+If you want to run only the frontend for development:
+
+```bash
+# Run backend and database
+docker compose up mysql backend -d
+
+# Run frontend in development mode (with hot reload)
+npm run dev
+```
+
+### Backend Development Only
+
+If you want to develop the backend while running containerized database:
+
+```bash
+# Run only the database
+docker compose up mysql -d
+
+# Run your backend locally (it will connect to the containerized MySQL)
+```
+
+### View Logs
+
+```bash
+# All services
+docker compose logs -f
+
+# Specific service
+docker compose logs -f frontend
+docker compose logs -f backend
+docker compose logs -f mysql
+```
+
+### Database Management
+
+#### Connect to MySQL
+
+```bash
+docker compose exec mysql mysql -u root -p greendrive_db
+# Password: 12345678
+```
+
+#### Backup Database
+
+```bash
+docker compose exec mysql mysqldump -u root -p greendrive_db > backup.sql
+```
+
+#### Restore Database
+
+```bash
+docker compose exec -T mysql mysql -u root -p greendrive_db < backup.sql
+```
+
+## Configuration
+
+### Environment Variables
+
+You can override environment variables by creating a `.env` file:
+
+```env
+# Database
+MYSQL_ROOT_PASSWORD=your_password
+MYSQL_DATABASE=your_database
+MYSQL_USER=your_user
+MYSQL_PASSWORD=your_user_password
+
+# Backend
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRATION=3600000
+
+# Ports
+FRONTEND_PORT=3000
+BACKEND_PORT=8080
+MYSQL_PORT=3306
+```
+
+### Backend Directory
+
+Update the backend build context in `docker-compose.yml`:
+
+```yaml
+backend:
+  build: ../your-backend-directory # Adjust this path
+```
+
+### Database Initialization
+
+If you have SQL initialization scripts, place them in a `mysql/init/` directory and uncomment the volume mapping in `docker-compose.yml`:
+
+```yaml
+volumes:
+  - ./mysql/init:/docker-entrypoint-initdb.d
+```
 
 ## Troubleshooting
 
-### Port already in use
+### Common Issues
 
-If you get a port conflict, you can:
+1. **Port Already in Use**
 
-1. Stop other services using the same port
-2. Use the custom port profile: `docker compose --profile prod-custom up`
-3. Modify the port mapping in `docker-compose.yml`
+   ```bash
+   # Check what's using the port
+   lsof -i :3000  # or :8080, :3306
 
-### Build issues
+   # Change ports in docker-compose.yml if needed
+   ```
 
-If you encounter build issues:
+2. **Database Connection Issues**
 
-1. Clear Docker cache: `docker system prune -a`
-2. Rebuild without cache: `docker compose build --no-cache`
+   ```bash
+   # Check if MySQL is healthy
+   docker compose ps
 
-### Development hot reload not working
+   # View MySQL logs
+   docker compose logs mysql
+   ```
 
-Ensure you're using the development profile and the volumes are properly mounted.
+3. **Frontend Can't Reach Backend**
 
-## Production Deployment
+   - Ensure both services are on the same network
+   - Check the nginx proxy configuration in `nginx.conf`
+   - Verify the backend container name matches in nginx config
 
-For production deployment, consider:
+4. **Permission Issues**
+   ```bash
+   # Fix file permissions
+   sudo chown -R $USER:$USER .
+   ```
 
-1. Using a reverse proxy (like Traefik or nginx)
-2. Setting up SSL/TLS certificates
-3. Configuring environment-specific variables
-4. Setting up monitoring and logging
-5. Using Docker Swarm or Kubernetes for orchestration
+### Reset Everything
 
-## API Proxy Configuration
+```bash
+# Stop all containers and remove volumes
+docker compose down -v
 
-The application is configured to proxy API requests to `https://kong-4ba1e74424uslyzd1.kongcloud.dev`. This configuration is handled by Vite's proxy settings in `vite.config.js` and will work in development mode. For production, you may need to configure nginx to handle API proxying or update the API endpoints to use absolute URLs.
+# Remove all images
+docker compose down --rmi all
+
+# Rebuild everything
+docker compose up --build
+```
+
+## Production Considerations
+
+For production deployment:
+
+1. **Environment Variables**: Use proper secrets management
+2. **Database**: Use external managed database service
+3. **SSL/HTTPS**: Add SSL termination
+4. **Monitoring**: Add health checks and monitoring
+5. **Scaling**: Use orchestration tools like Kubernetes
+
+## Network Architecture
+
+```
+Internet
+    ↓
+Frontend (Nginx) :3000
+    ↓ (proxy /api/*)
+Backend (Spring Boot) :8080
+    ↓ (JDBC)
+MySQL Database :3306
+```
+
+All services communicate through the `greendrive-network` Docker network for security and isolation.

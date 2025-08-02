@@ -1,37 +1,32 @@
-# Multi-stage build for React application
-FROM node:18-alpine AS base
+# Frontend Dockerfile for React + Vite application
+FROM node:18-alpine as build
 
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+# Set working directory
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
-RUN npm ci
+# Copy package files
+COPY package*.json ./
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Production image, copy all the files and run the app
-FROM nginx:alpine AS runner
-WORKDIR /app
+# Production stage with nginx
+FROM nginx:alpine
 
-# Copy the built application
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built assets from build stage
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-# COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 8081
-EXPOSE 8081
+# Expose port 80
+EXPOSE 80
 
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]
