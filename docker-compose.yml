@@ -1,8 +1,59 @@
 version: '3.8'
 
 services:
-  # Development service
-  app-dev:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: greendrive-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: greendrive_db
+      MYSQL_USER: greendrive_user
+      MYSQL_PASSWORD: greendrive_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - greendrive-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Spring Boot Application
+  backend:
+    build: 
+      context: ../GreenDrive-Backend
+      dockerfile: Dockerfile
+    container_name: greendrive-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/greendrive_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      JWT_SECRET: thisIsMysecregtfrdesww233hoaiklasdleasdnamdgkjjhhtdhttebd54ns8877465sbbdd
+      JWT_EXPIRATION: 3600000
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - greendrive-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Frontend Development service
+  frontend-dev:
     build:
       context: .
       target: builder
@@ -16,21 +67,29 @@ services:
     command: npm run dev -- --host 0.0.0.0
     profiles:
       - dev
+    networks:
+      - greendrive-network
+    depends_on:
+      - backend
 
-  # Production service
-  app-prod:
+  # Frontend Production service
+  frontend-prod:
     build:
       context: .
       target: runner
     ports:
-      - "3001:80"
+      - "4000:80"
     environment:
       - NODE_ENV=production
     profiles:
       - prod
+    networks:
+      - greendrive-network
+    depends_on:
+      - backend
 
-  # Production service with custom port
-  app-prod-custom:
+  # Frontend Production service with custom port
+  frontend-prod-custom:
     build:
       context: .
       target: runner
@@ -40,7 +99,15 @@ services:
       - NODE_ENV=production
     profiles:
       - prod-custom
+    networks:
+      - greendrive-network
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+    driver: local
 
 networks:
-  default:
+  greendrive-network:
     driver: bridge 
