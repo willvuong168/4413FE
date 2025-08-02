@@ -12,7 +12,7 @@ export default function Homepage() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://4413groupa.me/api/vehicles/deals?page=0&size=50"
+          "/api/vehicles/deals?page=0&size=50"
         );
         setFeaturedVehicles(response.data.content);
       } catch (error) {

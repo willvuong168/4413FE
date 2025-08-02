@@ -8,8 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://4413groupa.me",
-        changeOrigin: true,
+        target: "https://localhost:8080",
       },
     },
   },
