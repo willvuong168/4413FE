@@ -22,19 +22,16 @@ RUN npm run build
 
 # Production image, copy all the files and run the app
 FROM nginx:alpine AS runner
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-# Remove default nginx static assets
-RUN rm -rf ./*
-
-# Copy static assets from builder stage
-COPY --from=builder /app/dist .
+# Copy the built application
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-# COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 8888
-EXPOSE 8888
+# Expose port 80
+EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"] 

@@ -8,27 +8,21 @@ yarn-error.log*
 dist
 build
 
-# Environment variables
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# IDE and editor files
+# IDE files
 .vscode
 .idea
 *.swp
 *.swo
-*~
 
-# OS generated files
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
 # Git
@@ -36,8 +30,8 @@ Thumbs.db
 .gitignore
 
 # Docker
-Dockerfile*
-docker-compose*
+Dockerfile
+docker-compose.yml
 .dockerignore
 
 # Logs
@@ -91,7 +85,4 @@ jspm_packages/
 .fusebox/
 
 # DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port 
+.dynamodb/ 

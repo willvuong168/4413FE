@@ -5,7 +5,7 @@ services:
   app-dev:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      target: builder
     ports:
       - "5173:5173"
     volumes:
@@ -13,7 +13,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: npm run dev
+    command: npm run dev -- --host 0.0.0.0
     profiles:
       - dev
 
@@ -21,12 +21,11 @@ services:
   app-prod:
     build:
       context: .
-      dockerfile: Dockerfile
+      target: runner
     ports:
-      - "8888:8888"
+      - "80:80"
     environment:
       - NODE_ENV=production
-    restart: unless-stopped
     profiles:
       - prod
 
@@ -34,11 +33,14 @@ services:
   app-prod-custom:
     build:
       context: .
-      dockerfile: Dockerfile
+      target: runner
     ports:
-      - "3000:8888"
+      - "3000:80"
     environment:
       - NODE_ENV=production
-    restart: unless-stopped
     profiles:
-      - prod-custom 
+      - prod-custom
+
+networks:
+  default:
+    driver: bridge 

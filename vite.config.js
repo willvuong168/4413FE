@@ -6,10 +6,12 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ["4413groupa.me"],
     proxy: {
       "/api": {
-        target: "https://localhost:8080",
+        target: "https://kong-4ba1e74424uslyzd1.kongcloud.dev",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
   },
