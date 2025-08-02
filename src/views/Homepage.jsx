@@ -12,7 +12,7 @@ export default function Homepage() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "/api/vehicles/deals?page=0&size=50"
+          "https://kong-4ba1e74424uslyzd1.kongcloud.dev/api/vehicles/deals?page=0&size=50"
         );
         setFeaturedVehicles(response.data.content);
       } catch (error) {
