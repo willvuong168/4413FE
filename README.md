@@ -4,7 +4,6 @@
 
 - Node.js (>= 14.x) and npm (for local development)
 - Docker and Docker Compose (for containerized development/deployment)
-- IMPORTANT: make sure browser is not in dark mode, some components may not be able to be seen.
 
 ## Quick Start
 

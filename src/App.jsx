@@ -13,6 +13,7 @@ import VehicleDetailView from "./views/Catalog/VehicleDetailView";
 import Header from "./components/Header";
 import LoanView from "./views/Loan/LoanView";
 import CompareView from "./views/Compare/CompareView";
+import Chatbot from "./components/Chatbot";
 
 export default function App() {
   return (
@@ -40,6 +41,9 @@ export default function App() {
         <Route path="/catalog/:vid" element={<VehicleDetailView />} />
         <Route path="/loan" element={<LoanView />} />
       </Routes>
+
+      {/* Chatbot */}
+      <Chatbot />
     </>
   );
 }
