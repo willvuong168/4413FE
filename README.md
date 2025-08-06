@@ -41,13 +41,9 @@ Access the app: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-#### 🌐 Development with API Proxy (Nginx)
+### 🌐 Live Deployment
 
-```bash
-docker compose --profile dev --profile dev-proxy up --build
-```
-
-Access the app: [http://localhost:8080](http://localhost:8080)
+Access the app at: [https://orca-app-o8ajg.ondigitalocean.app/](https://orca-app-o8ajg.ondigitalocean.app/)
 
 ---
 
