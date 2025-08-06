@@ -4,6 +4,7 @@
 
 - Node.js (>= 14.x) and npm (for local development)
 - Docker and Docker Compose (for containerized development/deployment)
+- IMPORTANT: if you want to run backend locally, please change all apis in frontend from https://4413groupa.me to http://localhost:8080
 
 ## Quick Start
 
