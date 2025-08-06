@@ -1,55 +1,66 @@
-# GreenDrive - Electric Vehicle Online Store
+# 🚗 GreenDrive – Electric Vehicle Online Store
 
-## Prerequisites
+A modern web application for browsing and purchasing electric vehicles, built with React and Vite, and containerized using Docker.
 
-- Node.js (>= 14.x) and npm (for local development)
-- Docker and Docker Compose (for containerized development/deployment)
-- IMPORTANT: if you want to run backend locally, please change all apis in frontend from https://4413groupa.me to http://localhost:8080
+---
 
-## Quick Start
+## 📦 Prerequisites
 
-### Option 1: Docker (Recommended)
+- **Node.js** >= 14.x and **npm** – for local development
+- **Docker** and **Docker Compose** – for containerized development or deployment
 
-#### Development with Docker:
+> ⚠️ **Note**: If you're running the backend locally, update all frontend API URLs from  
+`https://4413groupa.me` → `http://localhost:8080`.
+
+---
+
+## 🚀 Quick Start
+
+### ✅ Option 1: Docker (Recommended)
+
+#### 🛠 Development Mode (with hot reload)
 
 ```bash
 git clone https://github.com/willvuong168/4413FE.git
 cd 4413FE
 
-# Run in development mode with hot reload
 docker compose --profile dev up --build
-
-# Access the app at http://localhost:5173
 ```
 
-#### Production with Docker:
+Access the app: [http://localhost:5173](http://localhost:5173)
+
+---
+
+#### ⚙️ Production Mode
 
 ```bash
-# Build and run production version
 docker compose --profile prod up --build
-
-# Access the app at http://localhost:3000
 ```
 
-#### Development with API Proxy:
+Access the app: [http://localhost:3000](http://localhost:3000)
+
+---
+
+#### 🌐 Development with API Proxy (Nginx)
 
 ```bash
-# Run with nginx proxy for API routing
-docker compose --profile dev-proxy up --build
-
-# Access the app at http://localhost:8080
+docker compose --profile dev --profile dev-proxy up --build
 ```
 
-### Option 2: Local Development
+Access the app: [http://localhost:8080](http://localhost:8080)
 
-#### Check your versions:
+---
+
+### 💻 Option 2: Local Development (No Docker)
+
+#### 1. Check your environment:
 
 ```bash
 node -v
 npm -v
 ```
 
-#### Clone the repository and install dependencies:
+#### 2. Clone and install dependencies:
 
 ```bash
 git clone https://github.com/willvuong168/4413FE.git
@@ -57,22 +68,28 @@ cd 4413FE
 npm install
 ```
 
-#### Run the React app:
+#### 3. Start the development server:
 
 ```bash
 npm run dev
 ```
 
-## Login Details
+Access the app at [http://localhost:5173](http://localhost:5173)
 
-Admin Credentials:
+---
+
+## 🔐 Login Credentials
+
+### 👨‍💼 Admin Account
+```
 Username: admin1
 Password: password1
-
-Customer Credentials:
-We have users 2 to 10. Access customer accounts using the following credentials:
-
 ```
-Username: user<#>        eg. user7
-Password: password<#>    eg. password7
+
+### 👥 Customer Accounts (user2 to user10)
 ```
+Username: user<#>        e.g. user7
+Password: password<#>    e.g. password7
+```
+
+---
